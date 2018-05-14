@@ -1,7 +1,6 @@
-import { CREATE_SUCCESS, LOGIN_SUCCESS, LOGGED_IN } from '../actions/types';
+import { CREATE_SUCCESS, LOGIN_SUCCESS, LOGGED_IN, LOGOUT } from '../actions/types';
 
 const initialState = {
-  token: '',
   isAuthenticated: false
 };
 
@@ -25,6 +24,11 @@ export default function(state = initialState, action) {
         return {
           ...state,
           isAuthenticated: action.payload
+        }
+      case LOGOUT:
+        return {
+          ...state,
+          isAuthenticated: action.isAuthenticated
         }
     default:
       return state;

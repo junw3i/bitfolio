@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Create from '../components/Create';
 import Login from '../components/Login';
 import Dashboard from '../components/Dashboard';
+import Admin from '../components/Admin';
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -13,6 +14,7 @@ const AppRouter = () => (
       </header>
       <Route path="/" component={Dashboard} exact={true} />
       <Route path="/register" component={Create} />
+      <Route path="/admin" component={Admin} />
       <Route path="/login" component={Login} />
     </div>
   </BrowserRouter>

@@ -33,7 +33,6 @@ class Create extends Component {
     } else {
       this.setState({ errorMessage: 'Password do not match'});
     }
-
   }
 
   render() {

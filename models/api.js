@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const db = require('../db');
 const jwt = require('jsonwebtoken');
+const utils = require('../utils');
 
 /**
 * ===========================================
@@ -26,6 +27,19 @@ module.exports = {
           callback(err2, userTickers );
         })
       });
+    })
+  },
+  saveTicker: (payload, callback) => {
+    utils.getUserId(payload.token, (user_id) => {
+      db.pool.getConnection((err, connection) => {
+        connection.query(`insert into users_watchlist (ticker, source, created_at_utc, user_id) VALUES ('${payload.ticker}', '${payload.source}', now(), ${user_id})`, (err2, results) => {
+          if (err2) {
+            console.error("unablet to inser users_watchlist: ", err.stack);
+          }
+          connection.release();
+          callback({results: "done"});
+        })
+      })
     })
   }
 }

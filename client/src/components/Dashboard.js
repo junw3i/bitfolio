@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Price from './Price';
+import Binance from './Binance';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { updateTickers } from '../actions/market';
@@ -15,7 +15,7 @@ class Dashboard extends Component {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ token: jwt})
       };
-      fetch('http://localhost:3001/dashboard/tickers', config)
+      fetch('/api/tickers', config)
       .then(response =>
         response.json())
         .then(tickers => {
@@ -31,7 +31,7 @@ class Dashboard extends Component {
       const ticks = this.props.tickers.map((tick) => {
         if (tick.source === "binance") {
           return (
-            <Price tickData={tick} key={tick.ticker}/>
+            <Binance tickData={tick} key={tick.ticker}/>
           )
         }
       });

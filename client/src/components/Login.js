@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Redirect } from 'react-router';
 import { connect } from 'react-redux';
 import { loginUser } from '../actions/login';
 
@@ -27,6 +28,12 @@ class Login extends Component {
   }
 
   render() {
+
+    const jwt = localStorage.getItem("jwt");
+    if (!!jwt) {
+      return <Redirect to="/" />
+    }
+    
     return (
       <div>
       Login
