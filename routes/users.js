@@ -1,5 +1,13 @@
 var express = require('express');
 var router = express.Router();
+const users = require("../controllers/users");
+
+
+// USERS
+
+router.post("/create", users.create);
+router.post("/login", users.login)
+router.get("/logout", users.logout);
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -15,5 +23,6 @@ router.get('/', function(req, res, next) {
   	username: "D0loresH4ze"
   }]);
 });
+
 
 module.exports = router;

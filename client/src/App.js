@@ -1,37 +1,20 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
-import Price from './components/Price';
-
+import { Provider } from 'react-redux';
+import store from './store';
+import AppRouter from './routers/AppRouter';
 
 class App extends Component {
   constructor() {
     super()
-    this.state = {users: []};
-  }
-
-  componentDidMount() {
-    fetch('/users')
-    .then(res => res.json())
-    .then(users => this.setState({ users }));
+    this.state = {users: [], token: '', isAuthenticated: false};
   }
 
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <Price />
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-          <h1>Users</h1>
-          {this.state.users.map(user =>
-            <div key={user.id}>{user.username}</div>
-          )}
-        </p>
-      </div>
+      <Provider store={store}>
+        <AppRouter />
+      </Provider>
     );
   }
 }
