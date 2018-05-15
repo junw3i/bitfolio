@@ -22,13 +22,15 @@ class Navbar extends Component {
 
   render() {
     return (
+
       <div>
-        <NavLink to="/" exact={true}>Dashboard</NavLink>
-        {this.props.auth && <button onClick={this.onClick}>Logout</button>}
-        {this.props.auth && <NavLink to="/admin">Admin</NavLink>}
-        {!this.props.auth && <NavLink to="/login">Login</NavLink>}
-        {!this.props.auth && <NavLink to="/register">Sign up</NavLink>}
-        this is the nav bar.
+
+          <NavLink to="/" exact={true}>Dashboard</NavLink>
+          {this.props.auth && <button onClick={this.onClick}>Logout</button>}
+          {this.props.auth && <NavLink to="/admin">Admin</NavLink>}
+          {!this.props.auth && <NavLink to="/login">Login</NavLink>}
+          {!this.props.auth && <NavLink to="/register">Sign up</NavLink>}
+
       </div>
     );
   }

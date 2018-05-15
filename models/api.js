@@ -15,7 +15,7 @@ module.exports = {
       let user_id = decoded.id;
       // fetch users_watchlist
       db.pool.getConnection((err, connection) => {
-        connection.query(`select ticker, source, created_at_utc from users_watchlist where user_id=${user_id} and is_live=1`, (err2, res2) => {
+        connection.query(`select id, ticker, source, created_at_utc from users_watchlist where user_id=${user_id} and is_live=1`, (err2, res2) => {
           connection.release();
           if (err) {
             console.error("unable to retrive users_watchlist: ", err.stack);
@@ -34,11 +34,22 @@ module.exports = {
       db.pool.getConnection((err, connection) => {
         connection.query(`insert into users_watchlist (ticker, source, created_at_utc, user_id) VALUES ('${payload.ticker}', '${payload.source}', now(), ${user_id})`, (err2, results) => {
           if (err2) {
-            console.error("unablet to inser users_watchlist: ", err.stack);
+            console.error("unable to insert users_watchlist: ", err.stack);
           }
           connection.release();
           callback({results: "done"});
         })
+      })
+    })
+  },
+  removeTicker: (payload, callback) => {
+    db.pool.getConnection((err, connection) => {
+      connection.query(`update users_watchlist set is_live=0 where id=${payload.id}`, (err2, results) => {
+        if (err2) {
+          console.error("unable to kill ticker in users_watchlist: ", err.stack);
+        }
+        connection.release();
+        callback({results: "done"});
       })
     })
   }

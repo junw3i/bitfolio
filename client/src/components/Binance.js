@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import { removeTicker } from '../actions/market';
+import { connect } from 'react-redux';
 
 class Binance extends Component {
   constructor(props) {
     super(props);
+    this.handleRemove = this.handleRemove.bind(this);
     this.state = { price: '' }
   }
   // componentDidMount(){
@@ -24,14 +27,37 @@ class Binance extends Component {
     this.connection.close();
   }
 
+  handleRemove(e) {
+    this.connection.close();
+    const data = {
+      id: this.props.tickData.id
+    };
+    let config = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    };
+    fetch('/api/removeTicker', config)
+    .then(() => {
+      console.log("ticker removed in db");
+    });
+    this.props.removeTicker(this.props.tickers, this.props.tickData);
+
+  }
+
   render() {
     return (
       <div>
         <b>{this.props.tickData.ticker}</b>
         <p>{this.state.price}</p>
+        <button onClick={this.handleRemove}>Remove</button>
       </div>
     )
   }
 }
 
-export default Binance;
+const mapStateToProps = state => ({
+  tickers: state.market.tickers
+});
+
+export default connect(mapStateToProps, { removeTicker })(Binance);

@@ -29,7 +29,7 @@ function createError(message) {
 
 // Calls the API to get a token and dispatches actions along the way
 export function createUser(creds) {
-  
+
   let config = {
     method: 'POST',
     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -40,7 +40,7 @@ export function createUser(creds) {
     // We dispatch requestLogin to kickoff the call to the API
     dispatch(requestCreate(creds));
 
-    return fetch('http://localhost:3001/users/create', config)
+    return fetch('/users/create', config)
     .then(response =>
       response.json()
       .then(user => ({ user, response }))

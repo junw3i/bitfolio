@@ -17,12 +17,18 @@ const getTickers = (req, res) => {
 }
 
 const saveTicker = (req, res) => {
-  api.saveTicker(req.body, (results2) => {
-    let payload = JSON.stringify(results2);
+  api.saveTicker(req.body, (results) => {
+    let payload = JSON.stringify(results);
     res.status(201).send(payload);
   })
 }
 
+const removeTicker = (req, res) => {
+  api.removeTicker(req.body, (results) => {
+    let payload = JSON.stringify(results);
+    res.status(201).send(payload);
+  })
+}
 
 
 /**
@@ -32,5 +38,6 @@ const saveTicker = (req, res) => {
  */
  module.exports = {
    getTickers,
-   saveTicker
+   saveTicker,
+   removeTicker
  }

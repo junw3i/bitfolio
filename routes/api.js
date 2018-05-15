@@ -6,5 +6,6 @@ const api = require("../controllers/api");
 
 router.post("/tickers", api.getTickers);
 router.post("/saveTicker", api.saveTicker);
+router.post("/removeTicker", api.removeTicker);
 
 module.exports = router;
