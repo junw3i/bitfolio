@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import Binance from './Binance';
+import CmcPrice from './CmcPrice';
+import CmcVolume from './CmcVolume';
+import Yahoo from './Yahoo';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { updateTickers } from '../actions/market';
@@ -30,10 +33,22 @@ class MarketData extends Component {
           return (
             <Binance tickData={tick} key={tick.ticker}/>
           )
+        } else if (tick.source === "coinmarketcap-price") {
+          return (
+            <CmcPrice tickData={tick} key={tick.ticker}/>
+          )
+        } else if (tick.source === "yahoo-price") {
+          return (
+            <Yahoo tickData={tick} key={tick.ticker}/>
+          )
+        } else if (tick.source === "coinmarketcap-volume") {
+          return (
+            <CmcVolume tickData={tick} key={tick.ticker}/>
+          )
         }
       });
       return (
-        <div>
+        <div className="container-market">
           {ticks}
         </div>
       );

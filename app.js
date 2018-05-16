@@ -12,6 +12,7 @@ require('dotenv').config()
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var priceRouter = require('./routes/price');
+var volRouter = require('./routes/volume');
 var apiRouter = require('./routes/api');
 
 
@@ -36,6 +37,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/price', priceRouter);
 app.use('/api', apiRouter);
+app.use('/volume', volRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

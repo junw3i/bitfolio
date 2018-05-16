@@ -14,7 +14,7 @@ const styles = {
   }
 };
 
-class Binance extends Component {
+class CmcVolume extends Component {
   constructor(props) {
     super(props);
     this.handleRemove = this.handleRemove.bind(this);
@@ -22,27 +22,14 @@ class Binance extends Component {
   }
 
   componentDidMount(){
-    let wsEndPoint = 'wss://stream.binance.com:9443/ws/' + this.props.tickData.ticker.toLowerCase() + '@aggTrade'
-    this.connection = new WebSocket(wsEndPoint);
-    this.connection.onmessage = evt => {
-      // add the new message to state
-      let tickData = JSON.parse(evt.data);
-      let price = parseFloat(tickData.p)
-      if (price / 10 > 1) {
-        price = price.toFixed(2);
-      } else {
-        price = price.toFixed(4);
-      }
-      this.setState({ price })
-    };
-  }
-
-  componentWillUnmount() {
-    this.connection.close();
+    fetch('/volume/' + this.props.tickData.ticker)
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ price: data.volume })
+      })
   }
 
   handleRemove(e) {
-    this.connection.close();
     const data = {
       id: this.props.tickData.id
     };
@@ -56,7 +43,6 @@ class Binance extends Component {
       console.log("ticker removed in db");
     });
     this.props.removeTicker(this.props.tickers, this.props.tickData);
-
   }
 
 
@@ -85,4 +71,4 @@ const mapStateToProps = state => ({
   tickers: state.market.tickers
 });
 
-export default connect(mapStateToProps, { removeTicker })(withStyles(styles)(Binance));
+export default connect(mapStateToProps, { removeTicker })(withStyles(styles)(CmcVolume));

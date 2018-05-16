@@ -1,6 +1,34 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 
+import TextField from '@material-ui/core/TextField';
+import { withStyles } from '@material-ui/core/styles';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+
+const styles = theme => ({
+  root: theme.mixins.gutters({
+  paddingTop: 16,
+  paddingBottom: 16,
+  marginTop: theme.spacing.unit * 3,
+}),
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+    width: 200,
+  },
+  menu: {
+    width: 200,
+  },
+});
+
 class Admin extends Component {
   constructor(props) {
     super(props);
@@ -19,7 +47,7 @@ class Admin extends Component {
       })
     }
   onChangeSelect(e) {
-    this.setState({ selectValue: e.target.value });
+    this.setState({ source: e.target.value });
   }
 
   onSubmit(e) {
@@ -41,36 +69,60 @@ class Admin extends Component {
   }
 
   render() {
+    const { classes } = this.props;
+
     if (this.state.formSubmitted) {
       return <Redirect to="/" />
     }
     return (
-      <div>
-        <p>welcome to admin</p>
-        <form onSubmit={this.onSubmit}>
-          <div>
-            <label>Ticker: </label><br />
-            <input type="text" name="ticker" onChange={this.onChange} value={this.state.ticker} />
-          </div>
-          <br />
+      <div className="container-admin">
+        <Paper className="paper" elevation={8}>
+          <form onSubmit={this.onSubmit}>
+            <Typography variant="headline" component="p">
+              Add Market Data
+            </Typography>
+            <TextField
+              id="ticker"
+              label="Ticker"
+              name="ticker"
+              margin="normal"
+              value={this.state.ticker}
+              onChange={this.onChange}
+            />
 
-          <label>
-            Source:<br />
-            <select value={this.state.source} onChange={this.onChangeSelect}>
-              <option value="binance">binance</option>
-              <option value="coinmarketcap-price">coinmarketcap-price</option>
-              <option value="coinmarketcap-volume">coinmarketcap-volume</option>
-            </select>
-          </label>
+            <Select
+              value={this.state.source}
+              onChange={this.onChangeSelect}
+              inputProps={{
+                name: 'source',
+                id: 'source'
+              }}
+            >
+              <MenuItem value="binance">
+                <em>binance</em>
+              </MenuItem>
+              <MenuItem value={"coinmarketcap-price"}>coinmarketcap-price</MenuItem>
+              <MenuItem value={"coinmarketcap-volume"}>coinmarketcap-volume</MenuItem>
+              <MenuItem value={"yahoo-price"}>yahoo-price</MenuItem>
+            </Select>
+            <br />
+              <Button className="admin-button" type="submit">
+                Submit
+              </Button>
+          </form>
+        </Paper>
 
-          <br />
-
-          <button type="submit">Submit</button>
-        </form>
+        <Paper className="paper" elevation={8}>
+          <form onSubmit={this.onSubmit}>
+            <Typography variant="headline" component="p">
+              Add Portfolio Data
+            </Typography>
+          </form>
+        </Paper>
       </div>
     );
   }
 
 }
 
-export default Admin;
+export default withStyles(styles)(Admin);

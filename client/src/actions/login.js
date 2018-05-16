@@ -42,9 +42,8 @@ function loginError(message) {
         dispatch(requestLogin(creds));
 
         return fetch('http://localhost:3001/users/login', config)
-            .then(response =>
-                response.json().then(user => ({ user, response }))
-            ).then(({ user, response }) =>  {
+            .then(response => response.json().then(user => ({ user, response })))
+            .then(({ user, response }) =>  {
               console.log(user, response);
                 if (!response.ok) {
                     // If there was a problem, we want to
