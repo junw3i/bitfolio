@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
@@ -27,6 +29,12 @@ const styles = theme => ({
   menu: {
     width: 200,
   },
+  select: {
+    minWidth: 90
+  },
+  input: {
+    minWidth: 200
+  }
 });
 
 class Admin extends Component {
@@ -34,11 +42,24 @@ class Admin extends Component {
     super(props);
     this.onChange = this.onChange.bind(this);
     this.onChangeSelect = this.onChangeSelect.bind(this);
+    this.onChangeSelectAsset = this.onChangeSelectAsset.bind(this);
+    this.onChangeSelectPortfolio = this.onChangeSelectPortfolio.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onSubmitPortfolio = this.onSubmitPortfolio.bind(this);
     this.state = {
       ticker: '',
       source: 'binance',
-      formSubmitted: false
+      formSubmitted: false,
+      portfolioName: null,
+      asset_type: 'cryptocurrencies',
+      portfolio_id: 0,
+      activity_ticker: null,
+      type: null,
+      activity_date: null,
+      price: null,
+      quantity: null,
+      fees: null,
+      net_proceeds: null
     };
   }
   onChange(e) {
@@ -48,6 +69,12 @@ class Admin extends Component {
     }
   onChangeSelect(e) {
     this.setState({ source: e.target.value });
+  }
+  onChangeSelectAsset(e) {
+    this.setState({ asset_type: e.target.value });
+  }
+  onChangeSelectPortfolio(e) {
+    this.setState({ portfolio_id: e.target.value });
   }
 
   onSubmit(e) {
@@ -65,6 +92,24 @@ class Admin extends Component {
     };
 
     fetch('/api/saveTicker', config)
+    .then(() => this.setState({ formSubmitted: true }));
+  }
+
+  onSubmitPortfolio(e) {
+    e.preventDefault();
+    const data = {
+      portfolioName: this.state.portfolioName.trim(),
+      asset_type: this.state.asset_type,
+      token: localStorage.getItem("jwt")
+    };
+    // made an api call to the node server
+    let config = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    };
+
+    fetch('/api/portfolio/save', config)
     .then(() => this.setState({ formSubmitted: true }));
   }
 
@@ -99,7 +144,7 @@ class Admin extends Component {
               }}
             >
               <MenuItem value="binance">
-                <em>binance</em>
+                binance
               </MenuItem>
               <MenuItem value={"coinmarketcap-price"}>coinmarketcap-price</MenuItem>
               <MenuItem value={"coinmarketcap-volume"}>coinmarketcap-volume</MenuItem>
@@ -113,16 +158,91 @@ class Admin extends Component {
         </Paper>
 
         <Paper className="paper" elevation={8}>
-          <form onSubmit={this.onSubmit}>
+          <form onSubmit={this.onSubmitPortfolio}>
             <Typography variant="headline" component="p">
-              Add Portfolio Data
+              Add Portfolio
             </Typography>
+            <TextField
+              id="portfolioName"
+              label="Name"
+              name="portfolioName"
+              margin="normal"
+              value={this.state.portfolioName}
+              onChange={this.onChange}
+              />
+
+              <Select
+                value={this.state.asset_type}
+                onChange={this.onChangeSelectAsset}
+                inputProps={{
+                  name: 'asset_type',
+                  id: 'asset_type'
+                }}
+              >
+                <MenuItem value="cryptocurrencies">
+                  cryptocurrencies
+                </MenuItem>
+                <MenuItem value={"shares"}>shares</MenuItem>
+              </Select>
+              <br />
+              <Button className="admin-button" type="submit">
+                Submit
+              </Button>
+          </form>
+        </Paper>
+
+
+
+        <Paper className="paper" elevation={8}>
+          <form onSubmit={this.onSubmitPortfolio}>
+            <Typography variant="headline" component="p">
+              Add Activity
+            </Typography>
+            <div className="input-row">
+              <p className="p-inline">Portfolio Name</p>
+              <Select
+                className={classes.select}
+                value={this.state.portfolio_id}
+                onChange={this.onChangeSelectPortfolio}
+                inputProps={{
+                  name: 'portfolio_id',
+                  id: 'portfolio_id'
+                }}
+              >
+                {this.props.portfolios.map((portfolio) => {
+                  return (
+                    <MenuItem value={portfolio.id}>
+                      {portfolio.portfolio_name}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+            </div>
+
+            <TextField
+              className={classes.input}
+              id="portfolioName"
+              label="Name"
+              name="portfolioName"
+              margin="normal"
+              value={this.state.portfolioName}
+              onChange={this.onChange}
+              />
+
+
+              <br />
+              <Button className="admin-button" type="submit">
+                Submit
+              </Button>
           </form>
         </Paper>
       </div>
     );
   }
-
 }
 
-export default withStyles(styles)(Admin);
+const mapStateToProps = state => ({
+  portfolios: state.portfolio.portfolios
+});
+
+export default connect(mapStateToProps, {}) (withStyles(styles)(Admin));

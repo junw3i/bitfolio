@@ -64,5 +64,4 @@ const mapStateToProps = state => ({
   tickers: state.market.tickers
 });
 
-
 export default connect(mapStateToProps, { updateTickers })(MarketData);

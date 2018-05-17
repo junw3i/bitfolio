@@ -10,3 +10,5 @@ export const LOGGED_IN = "LOGGED_IN";
 export const LOGOUT = 'LOGOUT';
 
 export const UPDATE_TICKERS = "UPDATE_TICKERS";
+
+export const UPDATE_PORTFOLIOS = "UPDATE_PORTFOLIOS";

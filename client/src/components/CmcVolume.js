@@ -31,7 +31,8 @@ class CmcVolume extends Component {
 
   handleRemove(e) {
     const data = {
-      id: this.props.tickData.id
+      id: this.props.tickData.id,
+      token: localStorage.getItem("jwt")
     };
     let config = {
       method: 'POST',

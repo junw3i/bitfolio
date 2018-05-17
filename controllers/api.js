@@ -9,7 +9,7 @@ const db = require('../db');
  */
 
 const getTickers = (req, res) => {
-  api.verify(req.body.token, (err2, results) => {
+  api.verify(req.body, (err2, results) => {
     // expects either an array or undefined
     let payload = JSON.stringify({ payload: results });
     res.status(201).send(payload);
@@ -30,6 +30,41 @@ const removeTicker = (req, res) => {
   })
 }
 
+const benchmark = (req, res) => {
+  api.benchmark(req.params.id, (results) => {
+    let payload = JSON.stringify(results);
+    res.status(201).send({payload});
+  })
+}
+
+const savePortfolio = (req, res) => {
+  api.savePortfolio(req.body, (results) => {
+    let payload = JSON.stringify(results);
+    res.status(201).send(payload);
+  })
+}
+
+const getPortfolio = (req, res) => {
+  api.getPortfolio(req.body, (results) => {
+    let payload = JSON.stringify(results);
+    res.status(201).send(payload);
+  })
+}
+
+const getActivities = (req, res) => {
+  api.getActivities(req.body, (results) => {
+    let payload = JSON.stringify(results);
+    res.status(201).send(payload);
+  })
+}
+
+const getEODNav = (req, res) => {
+  api.getEODNav(req.body, (results) => {
+    let payload = JSON.stringify(results);
+    console.log("pauyload", payload)
+    res.status(201).send(payload);
+  })
+}
 
 /**
  * ===========================================
@@ -39,5 +74,10 @@ const removeTicker = (req, res) => {
  module.exports = {
    getTickers,
    saveTicker,
-   removeTicker
+   removeTicker,
+   benchmark,
+   savePortfolio,
+   getPortfolio,
+   getActivities,
+   getEODNav
  }

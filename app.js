@@ -15,7 +15,6 @@ var priceRouter = require('./routes/price');
 var volRouter = require('./routes/volume');
 var apiRouter = require('./routes/api');
 
-
 var app = express();
 
 // view engine setup
