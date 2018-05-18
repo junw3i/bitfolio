@@ -55,7 +55,7 @@ class RecentTrades extends Component {
   render() {
     const { classes } = this.props;
     const tradeLines = this.state.trades.map((trade) => {
-      if (trade.type == "BUY") {
+      if (trade.type === "BUY") {
         return (
           <TableRow key={trade.id} hover={true}>
             <TableCell padding="dense" component="th" scope="row">
@@ -69,7 +69,7 @@ class RecentTrades extends Component {
             <TableCell padding="dense" numeric>{trade.net_proceeds}</TableCell>
           </TableRow>
         )
-      } else if (trade.type == "SELL") {
+      } else if (trade.type === "SELL") {
         return (
           <TableRow key={trade.id} hover={true}>
             <TableCell padding="dense" component="th" scope="row">

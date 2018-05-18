@@ -1,4 +1,4 @@
-import React from 'react';
+  import React from 'react';
 import RecentTrades from './RecentTrades';
 import BalanceSheet from './BalanceSheet';
 

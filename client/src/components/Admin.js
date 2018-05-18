@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import TextField from '@material-ui/core/TextField';

@@ -10,6 +10,9 @@ import { updateTickers } from '../actions/market';
 class MarketData extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+
+    }
     const jwt = localStorage.getItem("jwt");
     if (!!jwt) {
       let config = {
@@ -28,6 +31,7 @@ class MarketData extends Component {
     }
 
     render() {
+      console.log('props', this.props.tickers);
       const ticks = this.props.tickers.map((tick) => {
         if (tick.source === "binance") {
           return (
@@ -45,6 +49,8 @@ class MarketData extends Component {
           return (
             <CmcVolume tickData={tick} key={tick.ticker}/>
           )
+        } else {
+          return null;
         }
       });
       return (

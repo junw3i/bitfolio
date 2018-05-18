@@ -53,9 +53,14 @@ class Benchmark extends Component {
           <div className="returns-green">
             {this.state.returns}%
           </div>
-          <Typography className="benchmark-tick" variant="caption">
-            {this.props.tick}
-          </Typography>
+          <div className="bottom-flex">
+            <Typography className="benchmark-tick" variant="caption">
+              {this.state.price}
+            </Typography>
+            <Typography className="benchmark-tick" variant="caption">
+              {this.props.tick}
+            </Typography>
+          </div>
         </Card>
       )
     } else if (this.state.returns < 0) {
@@ -86,9 +91,14 @@ class Benchmark extends Component {
           <div className="returns-black">
             {this.state.returns}%
           </div>
-          <Typography className="benchmark-tick" variant="caption">
-            {this.props.tick}
-          </Typography>
+          <div className="bottom-flex">
+            <Typography className="benchmark-tick" variant="caption">
+              {this.state.price}
+            </Typography>
+            <Typography className="benchmark-tick" variant="caption">
+              {this.props.tick}
+            </Typography>
+          </div>
         </Card>
       )
     }

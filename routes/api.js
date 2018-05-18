@@ -24,7 +24,7 @@ const verify = (req, res, next) => {
 
 router.post("/tickers", verify, api.getTickers);
 router.post("/saveTicker", verify, api.saveTicker);
-router.post("/removeTicker", verify, api.removeTicker);
+router.post("/removeTicker", api.removeTicker);
 router.get("/benchmark/daily/:id", api.benchmark);
 
 router.post("/portfolio/save", verify, api.savePortfolio);

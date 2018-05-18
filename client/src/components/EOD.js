@@ -14,7 +14,6 @@ const styles = {
   }
 };
 
-
 class EOD extends Component {
   constructor(props) {
     super(props);
@@ -38,7 +37,6 @@ class EOD extends Component {
     fetch('/api/portfolio/eodnav', config)
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       this.setState({
         date: data.datetime_utc,
         nav: data.nav,

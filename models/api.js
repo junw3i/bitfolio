@@ -22,7 +22,7 @@ const calculateBalance = (portfolio_id, callback) => {
         connection.query(`update balance set is_live=0, created_at_utc=now() where is_live=1 and portfolio_id=${portfolio_id}`, (err3, results3) => {
           // update balance table
           results.forEach((ticker) => {
-            // NEED TO UPSERT
+            // upsert done
             let queryString = `insert into balance (ticker, amount, is_live, created_at_utc, portfolio_id, portfolio_ticker) values ('${ticker.ticker}', '${ticker.net_quantity}', 1, now(), ${portfolio_id}, '${portfolio_id}_${ticker.ticker}') ON DUPLICATE KEY UPDATE amount='${ticker.net_quantity}', created_at_utc=now(), is_live=1`
             connection.query(queryString, (err4, results4) => {
               console.log("results4", err4);
@@ -48,7 +48,7 @@ module.exports = {
           if (err) {
             console.error("unable to retrive users_watchlist: ", err.message);
           }
-          let userTickers;
+          let userTickers = [];
           if (res2.length > 0) {
             userTickers = res2;
           }
@@ -142,7 +142,7 @@ module.exports = {
           console.error("unable to fetch eod nav: ", err2.stack);
         }
         connection.release();
-        let eodNAV;
+        let eodNAV = {};
         if (results !== undefined && results.length > 0) {
           eodNAV = results[0];
         }
@@ -189,11 +189,11 @@ module.exports = {
           console.error("unable to fetch eod nav: ", err2.stack);
         }
         connection.release();
-        let eodNAV;
+        let balance = [];
         if (results !== undefined && results.length > 0) {
-          eodNAV = results;
+          balance = results;
         }
-        callback(eodNAV);
+        callback(balance);
       })
     })
   }

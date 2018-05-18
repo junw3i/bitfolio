@@ -75,7 +75,6 @@ const saveActivities = (req, res) => {
 const getBalance = (req, res) => {
   api.getBalance(req.body, (results) => {
     let payload = JSON.stringify(results);
-    console.log("pauyload", payload)
     res.status(201).send(payload);
   })
 }

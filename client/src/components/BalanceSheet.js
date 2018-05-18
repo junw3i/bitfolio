@@ -7,8 +7,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
-import moment from 'moment';
-
 const styles = theme => ({
   root: {
     width: '100%',
@@ -42,7 +40,6 @@ class BalanceSheet extends Component {
     fetch('/api/portfolio/balance', config)
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       this.setState({
         balances: data,
       });
