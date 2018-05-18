@@ -45,7 +45,6 @@ class Portfolios extends Component {
     });
     return (
       <div className="container-benchmark">
-        <div className="subtitle">EOD Performance</div>
         <div className="benchmarks">{benchmarks}{portfoliosEOD}</div>
         {portfolios}
       </div>

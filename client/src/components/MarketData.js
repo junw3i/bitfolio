@@ -48,9 +48,12 @@ class MarketData extends Component {
         }
       });
       return (
-        <div className="container-market">
-          {ticks}
+        <div>
+          <div className="container-market">
+            {ticks}
+          </div>
         </div>
+
       );
     }
   }

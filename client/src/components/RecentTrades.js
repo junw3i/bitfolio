@@ -18,6 +18,10 @@ const styles = theme => ({
   table: {
     width: '100%',
   },
+  date : {
+    paddingLeft: 12,
+    paddingRight: 12
+  }
 });
 
 class RecentTrades extends Component {
@@ -51,38 +55,68 @@ class RecentTrades extends Component {
   render() {
     const { classes } = this.props;
     const tradeLines = this.state.trades.map((trade) => {
-      return (
-      <TableBody>
-        <TableRow key={trade.ticker} hover={true}>
-          <TableCell padding="dense" component="th" scope="row">
-            {trade.ticker}
-          </TableCell>
-          <TableCell padding="dense" numeric>{moment(trade.activity_date).format("DD-MMM hh:mm")}</TableCell>
-          <TableCell padding="dense" numeric>{trade.type}</TableCell>
-          <TableCell padding="dense" numeric>{trade.quantity}</TableCell>
-          <TableCell padding="dense" numeric>{trade.price}</TableCell>
-          <TableCell padding="dense" numeric>{trade.net_proceeds}</TableCell>
-        </TableRow>
-      </TableBody>
-    )
+      if (trade.type == "BUY") {
+        return (
+          <TableRow key={trade.id} hover={true}>
+            <TableCell padding="dense" component="th" scope="row">
+              {trade.ticker}
+            </TableCell>
+            <TableCell padding="dense"
+              className={classes.date} numeric>{moment(trade.activity_date).add((moment().utcOffset()), 'm').format("DD-MMM HH:mm")}</TableCell>
+            <TableCell className="green" padding="dense" numeric>{trade.type}</TableCell>
+            <TableCell padding="dense" numeric>{trade.quantity}</TableCell>
+            <TableCell padding="dense" numeric>{trade.price}</TableCell>
+            <TableCell padding="dense" numeric>{trade.net_proceeds}</TableCell>
+          </TableRow>
+        )
+      } else if (trade.type == "SELL") {
+        return (
+          <TableRow key={trade.id} hover={true}>
+            <TableCell padding="dense" component="th" scope="row">
+              {trade.ticker}
+            </TableCell>
+            <TableCell padding="dense"
+              className={classes.date} numeric>{moment(trade.activity_date).add((moment().utcOffset()), 'm').format("DD-MMM HH:mm")}</TableCell>
+            <TableCell className="red" padding="dense" numeric>{trade.type}</TableCell>
+            <TableCell padding="dense" numeric>{trade.quantity}</TableCell>
+            <TableCell padding="dense" numeric>{trade.price}</TableCell>
+            <TableCell padding="dense" numeric>{trade.net_proceeds}</TableCell>
+          </TableRow>
+        )
+      } else {
+        return (
+          <TableRow key={trade.id} hover={true}>
+            <TableCell padding="dense" component="th" scope="row">
+              {trade.ticker}
+            </TableCell>
+            <TableCell padding="dense" className={classes.date} numeric>{moment(trade.activity_date).add((moment().utcOffset()), 'm').format("DD-MMM HH:mm")}</TableCell>
+            <TableCell padding="dense" numeric>{trade.type}</TableCell>
+            <TableCell padding="dense" numeric>{trade.quantity}</TableCell>
+            <TableCell padding="dense" numeric>{trade.price}</TableCell>
+            <TableCell padding="dense" numeric>{trade.net_proceeds}</TableCell>
+          </TableRow>
+        )
+      }
     });
     return (
       <div>
-        Recent Trades
+        Last 10 Activities
         <Table className={classes.table}>
         <TableHead>
           <TableRow>
             <TableCell padding="dense">Ticker</TableCell>
-            <TableCell padding="dense" numeric>Trade Date</TableCell>
+            <TableCell padding="dense"
+              className={classes.date}
+              numeric>Trade Date</TableCell>
             <TableCell padding="dense" numeric>Type</TableCell>
             <TableCell padding="dense" numeric>Quantity</TableCell>
             <TableCell padding="dense" numeric>Price</TableCell>
             <TableCell padding="dense" numeric>Proceeds</TableCell>
           </TableRow>
         </TableHead>
-
-        {tradeLines}
-
+        <TableBody>
+          {tradeLines}
+        </TableBody>
       </Table>
       </div>
     );

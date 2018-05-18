@@ -9,6 +9,35 @@ const utils = require('../utils');
 * ===========================================
 */
 
+const calculateBalance = (portfolio_id, callback) => {
+  db.pool.getConnection((err, connection) => {
+    connection.query(`select ticker, sum(quantity) as 'net_quantity' from activities where (type='BUY' or type='SELL') and is_live=1 and portfolio_id=${portfolio_id} group by ticker HAVING net_quantity > 0`, (err2, results) => {
+
+      if (err) {
+        console.error("unable to retrive users_watchlist: ", err.message);
+      }
+      let balance;
+      if (results.length > 0) {
+        balance = results;
+        connection.query(`update balance set is_live=0, created_at_utc=now() where is_live=1 and portfolio_id=${portfolio_id}`, (err3, results3) => {
+          // update balance table
+          results.forEach((ticker) => {
+            // NEED TO UPSERT
+            let queryString = `insert into balance (ticker, amount, is_live, created_at_utc, portfolio_id, portfolio_ticker) values ('${ticker.ticker}', '${ticker.net_quantity}', 1, now(), ${portfolio_id}, '${portfolio_id}_${ticker.ticker}') ON DUPLICATE KEY UPDATE amount='${ticker.net_quantity}', created_at_utc=now(), is_live=1`
+            connection.query(queryString, (err4, results4) => {
+              console.log("results4", err4);
+
+            })
+          })
+        })
+      }
+      // connection.release();
+      // TO DO: NEED TO REFACTOR FOR CONNECTION RELEASE
+      callback(balance);
+    })
+  })
+}
+
 module.exports = {
   verify: (payload, callback) => {
 
@@ -93,7 +122,7 @@ module.exports = {
   },
   getActivities: (payload, callback) => {
     db.pool.getConnection((err, connection) => {
-      connection.query(`select activity_date, ticker, type, quantity, price, net_proceeds from activities where is_live=1 and portfolio_id=${payload.portfolio_id} order by activity_date desc limit 10`, (err2, results) => {
+      connection.query(`select id, activity_date, ticker, type, quantity, price, net_proceeds from activities where is_live=1 and portfolio_id=${payload.portfolio_id} order by activity_date desc limit 10`, (err2, results) => {
         if (err2) {
           console.error("unable to fetch activity table: ", err2.stack);
         }
@@ -116,6 +145,53 @@ module.exports = {
         let eodNAV;
         if (results !== undefined && results.length > 0) {
           eodNAV = results[0];
+        }
+        callback(eodNAV);
+      })
+    })
+  },
+  saveActivities: (payload, callback) => {
+    let string;
+    if (payload.price == null && payload.quantity == null) {
+      string = `'${payload.activity_ticker}', '${payload.type}', '${payload.activity_date}', null, null, '${payload.fees}', '${payload.net_proceeds}', now(), '${payload.portfolio_id}'`;
+    } else if (payload.price == null) {
+      string = `'${payload.activity_ticker}', '${payload.type}', '${payload.activity_date}', null, '${payload.quantity}', '${payload.fees}', '${payload.net_proceeds}', now(), '${payload.portfolio_id}'`;
+    } else if (payload.quantity == null) {
+      string = `'${payload.activity_ticker}', '${payload.type}', '${payload.activity_date}', '${payload.price}', null, '${payload.fees}', '${payload.net_proceeds}', now(), '${payload.portfolio_id}'`;
+    } else {
+      string = `'${payload.activity_ticker}', '${payload.type}', '${payload.activity_date}', '${payload.price}', '${payload.quantity}', '${payload.fees}', '${payload.net_proceeds}', now(), '${payload.portfolio_id}'`;
+    }
+
+    db.pool.getConnection((err, connection) => {
+      connection.query(`insert into activities (ticker, type, activity_date, price, quantity, fees, net_proceeds, created_at_utc, portfolio_id) VALUES (${string})`, (err2, results) => {
+        if (err2) {
+          console.error("unable to insert activity: ", err2.stack);
+        }
+        connection.release();
+        let eodNAV;
+        if (results !== undefined && results.length > 0) {
+          eodNAV = results[0];
+        }
+        if (payload.asset_type == 'shares') {
+          // do balance
+          calculateBalance(payload.portfolio_id, (results2) => {
+            console.log("results2", results2)
+            callback(results2);
+          })
+        }
+      })
+    })
+  },
+  getBalance: (payload, callback) => {
+    db.pool.getConnection((err, connection) => {
+      connection.query(`select ticker, amount, avg_cost from balance where is_live=1 and portfolio_id=${payload.portfolio_id} order by ticker`, (err2, results) => {
+        if (err2) {
+          console.error("unable to fetch eod nav: ", err2.stack);
+        }
+        connection.release();
+        let eodNAV;
+        if (results !== undefined && results.length > 0) {
+          eodNAV = results;
         }
         callback(eodNAV);
       })

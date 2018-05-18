@@ -10,6 +10,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+
+import moment from 'moment';
 
 const styles = theme => ({
   root: theme.mixins.gutters({
@@ -24,16 +28,20 @@ const styles = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 200,
+    width: 190,
   },
   menu: {
-    width: 200,
+    width: 190,
   },
   select: {
-    minWidth: 90
+    minWidth: 190,
+    marginLeft: 7,
+    marginRight: 7
   },
   input: {
-    minWidth: 200
+    minWidth: 190,
+    marginLeft: 7,
+    marginRight: 7
   }
 });
 
@@ -46,20 +54,27 @@ class Admin extends Component {
     this.onChangeSelectPortfolio = this.onChangeSelectPortfolio.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.onSubmitPortfolio = this.onSubmitPortfolio.bind(this);
+    this.onSubmitActivity = this.onSubmitActivity.bind(this);
+    this.onChangeSelectType = this.onChangeSelectType.bind(this);
+    this.onChangeCaps = this.onChangeCaps.bind(this);
+    this.onChangePrice = this.onChangePrice.bind(this);
+    this.onChangeQuantity = this.onChangeQuantity.bind(this);
+    this.onChangeFees = this.onChangeFees.bind(this);
     this.state = {
       ticker: '',
       source: 'binance',
       formSubmitted: false,
-      portfolioName: null,
+      portfolioName: '',
       asset_type: 'cryptocurrencies',
-      portfolio_id: 0,
-      activity_ticker: null,
-      type: null,
-      activity_date: null,
-      price: null,
-      quantity: null,
-      fees: null,
-      net_proceeds: null
+      portfolio_id: '',
+      activity_ticker: '',
+      type: "BUY",
+      activity_date: '',
+      price: '',
+      quantity: '',
+      fees: 0,
+      net_proceeds: '',
+      allTypes: ['BUY', "SELL", "SUB", "REDM"]
     };
   }
   onChange(e) {
@@ -67,6 +82,56 @@ class Admin extends Component {
         [e.target.name]: e.target.value
       })
     }
+  onChangePrice(e) {
+      let net_proceeds = this.state.net_proceeds;
+      if (!isNaN(e.target.value) && !isNaN(this.state.quantity) && !isNaN(this.state.fees)) {
+        net_proceeds = e.target.value * this.state.quantity - this.state.fees
+        if (net_proceeds / 10 > 1) {
+          net_proceeds = net_proceeds.toFixed(2);
+        } else {
+          net_proceeds = net_proceeds.toFixed(4);
+        }
+      }
+      this.setState({
+        [e.target.name]: e.target.value,
+        net_proceeds
+      });
+    }
+    onChangeQuantity(e) {
+        let net_proceeds = this.state.net_proceeds;
+        if (!isNaN(e.target.value) && !isNaN(this.state.quantity) && !isNaN(this.state.fees)) {
+          net_proceeds = e.target.value * this.state.price - this.state.fees
+          if (net_proceeds / 10 > 1) {
+            net_proceeds = net_proceeds.toFixed(2);
+          } else {
+            net_proceeds = net_proceeds.toFixed(4);
+          }
+        }
+        this.setState({
+          [e.target.name]: e.target.value,
+          net_proceeds
+        });
+      }
+      onChangeFees(e) {
+          let net_proceeds = this.state.net_proceeds;
+          if (!isNaN(e.target.value) && !isNaN(this.state.quantity) && !isNaN(this.state.fees)) {
+            net_proceeds = this.state.price * this.state.quantity - e.target.value;
+            if (net_proceeds / 10 > 1) {
+              net_proceeds = net_proceeds.toFixed(2);
+            } else {
+              net_proceeds = net_proceeds.toFixed(4);
+            }
+          }
+          this.setState({
+            [e.target.name]: e.target.value,
+            net_proceeds
+          });
+        }
+  onChangeCaps(e) {
+    this.setState({
+      [e.target.name]: e.target.value.toUpperCase()
+    })
+  }
   onChangeSelect(e) {
     this.setState({ source: e.target.value });
   }
@@ -75,6 +140,9 @@ class Admin extends Component {
   }
   onChangeSelectPortfolio(e) {
     this.setState({ portfolio_id: e.target.value });
+  }
+  onChangeSelectType(e) {
+    this.setState({ type: e.target.value })
   }
 
   onSubmit(e) {
@@ -113,6 +181,52 @@ class Admin extends Component {
     .then(() => this.setState({ formSubmitted: true }));
   }
 
+  onSubmitActivity(e) {
+    e.preventDefault();
+    let activity_date = moment.utc(this.state.activity_date, 'YYYY-MM-DD');
+    activity_date = (moment(activity_date).add(-(moment().utcOffset()), 'm'));
+    activity_date = activity_date.format().toString();
+
+    let asset_type;
+    this.props.portfolios.forEach((portfolio) => {
+      if (portfolio.id === this.state.portfolio_id) {
+        asset_type = portfolio.asset_type
+      }
+    })
+
+    let quantity;
+    let net_proceeds;
+    if (this.state.type === "BUY" || this.state.type === "REDM") {
+      quantity = this.state.quantity;
+      net_proceeds = -this.state.net_proceeds;
+    } else if (this.state.type === "SELL") {
+      quantity = -this.state.quantity;
+      net_proceeds = this.state.net_proceeds;
+    }
+
+    const data = {
+      portfolio_id: this.state.portfolio_id,
+      activity_ticker: this.state.activity_ticker,
+      type: this.state.type,
+      activity_date,
+      price: this.state.price || null,
+      quantity: quantity || null,
+      fees: this.state.fees,
+      net_proceeds,
+      asset_type,
+      token: localStorage.getItem("jwt")
+    };
+    // made an api call to the node server
+    let config = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    };
+
+    fetch('/api/trades/save', config)
+    .then(() => this.setState({ formSubmitted: true }));
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -128,13 +242,14 @@ class Admin extends Component {
             </Typography>
             <TextField
               id="ticker"
-              label="Ticker"
+              label="ticker"
               name="ticker"
               margin="normal"
               value={this.state.ticker}
               onChange={this.onChange}
             />
-
+            <FormControl>
+              <InputLabel htmlFor="source">source</InputLabel>
             <Select
               value={this.state.source}
               onChange={this.onChangeSelect}
@@ -150,6 +265,7 @@ class Admin extends Component {
               <MenuItem value={"coinmarketcap-volume"}>coinmarketcap-volume</MenuItem>
               <MenuItem value={"yahoo-price"}>yahoo-price</MenuItem>
             </Select>
+            </FormControl>
             <br />
               <Button className="admin-button" type="submit">
                 Submit
@@ -164,26 +280,28 @@ class Admin extends Component {
             </Typography>
             <TextField
               id="portfolioName"
-              label="Name"
+              label="name"
               name="portfolioName"
               margin="normal"
               value={this.state.portfolioName}
               onChange={this.onChange}
               />
-
-              <Select
-                value={this.state.asset_type}
-                onChange={this.onChangeSelectAsset}
-                inputProps={{
-                  name: 'asset_type',
-                  id: 'asset_type'
-                }}
-              >
-                <MenuItem value="cryptocurrencies">
-                  cryptocurrencies
-                </MenuItem>
-                <MenuItem value={"shares"}>shares</MenuItem>
-              </Select>
+              <FormControl>
+                <InputLabel htmlFor="asset_type">asset type</InputLabel>
+                <Select
+                  value={this.state.asset_type}
+                  onChange={this.onChangeSelectAsset}
+                  inputProps={{
+                    name: 'asset_type',
+                    id: 'asset_type'
+                  }}
+                >
+                  <MenuItem value="cryptocurrencies">
+                    cryptocurrencies
+                  </MenuItem>
+                  <MenuItem value={"shares"}>shares</MenuItem>
+                </Select>
+              </FormControl>
               <br />
               <Button className="admin-button" type="submit">
                 Submit
@@ -194,12 +312,12 @@ class Admin extends Component {
 
 
         <Paper className="paper" elevation={8}>
-          <form onSubmit={this.onSubmitPortfolio}>
+          <form onSubmit={this.onSubmitActivity}>
             <Typography variant="headline" component="p">
               Add Activity
             </Typography>
-            <div className="input-row">
-              <p className="p-inline">Portfolio Name</p>
+              <FormControl>
+              <InputLabel htmlFor="portfolio_id">portfolio</InputLabel>
               <Select
                 className={classes.select}
                 value={this.state.portfolio_id}
@@ -217,18 +335,86 @@ class Admin extends Component {
                   )
                 })}
               </Select>
-            </div>
+              </FormControl>
 
             <TextField
               className={classes.input}
-              id="portfolioName"
-              label="Name"
-              name="portfolioName"
-              margin="normal"
-              value={this.state.portfolioName}
-              onChange={this.onChange}
+              id="activity_ticker"
+              label="ticker"
+              name="activity_ticker"
+              margin="dense"
+              value={this.state.activity_ticker}
+              onChange={this.onChangeCaps}
               />
 
+            <TextField
+              className={classes.input}
+              id="activity_date"
+              name="activity_date"
+              label="date"
+              type="date"
+              onChange={this.onChange}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <FormControl>
+            <InputLabel htmlFor="type">type</InputLabel>
+            <Select
+              className={classes.select}
+              value={this.state.type}
+              onChange={this.onChangeSelectType}
+              inputProps={{
+                name: 'type',
+                id: 'type'
+              }}
+            >
+              {this.state.allTypes.map((type) => {
+                return (
+                  <MenuItem value={type} key={type}>
+                    {type}
+                  </MenuItem>
+                )
+              })}
+            </Select>
+            </FormControl>
+
+            <TextField
+              className={classes.input}
+              id="price"
+              label="price"
+              name="price"
+              margin="dense"
+              value={this.state.price}
+              onChange={this.onChangePrice}
+              />
+            <TextField
+              className={classes.input}
+              id="quantity"
+              label="quantity"
+              name="quantity"
+              margin="dense"
+              value={this.state.quantity}
+              onChange={this.onChangeQuantity}
+              />
+            <TextField
+              className={classes.input}
+              id="fees"
+              label="fees"
+              name="fees"
+              margin="dense"
+              value={this.state.fees}
+              onChange={this.onChangeFees}
+              />
+            <TextField
+              className={classes.input}
+              id="net_proceeds"
+              label="net proceeds"
+              name="net_proceeds"
+              margin="dense"
+              value={this.state.net_proceeds}
+              onChange={this.onChange}
+              />
 
               <br />
               <Button className="admin-button" type="submit">

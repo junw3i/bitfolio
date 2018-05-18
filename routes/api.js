@@ -31,7 +31,10 @@ router.post("/portfolio/save", verify, api.savePortfolio);
 router.post("/portfolio/get", verify, api.getPortfolio);
 router.post("/portfolio/activity", verify, api.getActivities);
 router.post("/portfolio/eodnav", verify, api.getEODNav);
+router.post("/portfolio/balance", verify, api.getBalance);
 
 router.post("/trades/get", api.getActivities);
+router.post("/trades/save", verify, api.saveActivities);
+
 
 module.exports = router;

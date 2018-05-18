@@ -61,6 +61,20 @@ const getActivities = (req, res) => {
 const getEODNav = (req, res) => {
   api.getEODNav(req.body, (results) => {
     let payload = JSON.stringify(results);
+    res.status(201).send(payload);
+  })
+}
+
+const saveActivities = (req, res) => {
+  api.saveActivities(req.body, (results) => {
+    let payload = JSON.stringify(results);
+    res.status(201).send(payload);
+  })
+}
+
+const getBalance = (req, res) => {
+  api.getBalance(req.body, (results) => {
+    let payload = JSON.stringify(results);
     console.log("pauyload", payload)
     res.status(201).send(payload);
   })
@@ -79,5 +93,7 @@ const getEODNav = (req, res) => {
    savePortfolio,
    getPortfolio,
    getActivities,
-   getEODNav
+   getEODNav,
+   saveActivities,
+   getBalance
  }
