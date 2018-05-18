@@ -55,6 +55,7 @@ class RecentTrades extends Component {
   render() {
     const { classes } = this.props;
     const tradeLines = this.state.trades.map((trade) => {
+      let net_proceeds = trade.net_proceeds.toLocaleString('en-US', {minimumFractionDigits: 2})
       if (trade.type === "BUY") {
         return (
           <TableRow key={trade.id} hover={true}>
@@ -66,7 +67,7 @@ class RecentTrades extends Component {
             <TableCell className="green" padding="dense" numeric>{trade.type}</TableCell>
             <TableCell padding="dense" numeric>{trade.quantity}</TableCell>
             <TableCell padding="dense" numeric>{trade.price}</TableCell>
-            <TableCell padding="dense" numeric>{trade.net_proceeds}</TableCell>
+            <TableCell padding="dense" numeric>{net_proceeds}</TableCell>
           </TableRow>
         )
       } else if (trade.type === "SELL") {
@@ -80,7 +81,7 @@ class RecentTrades extends Component {
             <TableCell className="red" padding="dense" numeric>{trade.type}</TableCell>
             <TableCell padding="dense" numeric>{trade.quantity}</TableCell>
             <TableCell padding="dense" numeric>{trade.price}</TableCell>
-            <TableCell padding="dense" numeric>{trade.net_proceeds}</TableCell>
+            <TableCell padding="dense" numeric>{net_proceeds}</TableCell>
           </TableRow>
         )
       } else {
@@ -93,7 +94,7 @@ class RecentTrades extends Component {
             <TableCell padding="dense" numeric>{trade.type}</TableCell>
             <TableCell padding="dense" numeric>{trade.quantity}</TableCell>
             <TableCell padding="dense" numeric>{trade.price}</TableCell>
-            <TableCell padding="dense" numeric>{trade.net_proceeds}</TableCell>
+            <TableCell padding="dense" numeric>{net_proceeds}</TableCell>
           </TableRow>
         )
       }

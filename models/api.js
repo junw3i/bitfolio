@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const db = require('../db');
 const jwt = require('jsonwebtoken');
 const utils = require('../utils');
+const async = require('async');
 
 /**
 * ===========================================

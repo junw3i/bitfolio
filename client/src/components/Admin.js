@@ -198,7 +198,7 @@ class Admin extends Component {
     if (this.state.type === "BUY" || this.state.type === "REDM") {
       quantity = this.state.quantity;
       net_proceeds = -this.state.net_proceeds;
-    } else if (this.state.type === "SELL") {
+    } else if (this.state.type === "SELL" || "SUB") {
       quantity = -this.state.quantity;
       net_proceeds = this.state.net_proceeds;
     }
