@@ -4,7 +4,6 @@ const api = require("../controllers/api");
 const jwt = require('jsonwebtoken');
 
 const verify = (req, res, next) => {
-
   if (req.body.token === 'undefined') {
     res.sendStatus(403);
   } else {

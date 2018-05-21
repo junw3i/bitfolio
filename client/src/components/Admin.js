@@ -67,13 +67,14 @@ class Admin extends Component {
       asset_type: 'cryptocurrencies',
       portfolio_id: '',
       activity_ticker: '',
+      base_currency: '',
       type: "BUY",
       activity_date: '',
       price: '',
       quantity: '',
       fees: 0,
       net_proceeds: '',
-      allTypes: ['BUY', "SELL", "SUB", "REDM"]
+      allTypes: ['BUY', "SELL", "SUB", "REDM", "INTL"]
     };
   }
   onChange(e) {
@@ -182,6 +183,7 @@ class Admin extends Component {
 
   onSubmitActivity(e) {
     e.preventDefault();
+    console.log("fired");
     let activity_date = moment.utc(this.state.activity_date, 'YYYY-MM-DD');
     activity_date = (moment(activity_date).add(-(moment().utcOffset()), 'm'));
     activity_date = activity_date.format().toString();
@@ -206,6 +208,7 @@ class Admin extends Component {
     const data = {
       portfolio_id: this.state.portfolio_id,
       activity_ticker: this.state.activity_ticker,
+      base_currency: this.state.base_currency,
       type: this.state.type,
       activity_date,
       price: this.state.price || null,
@@ -221,7 +224,7 @@ class Admin extends Component {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(data)
     };
-
+    console.log(config);
     fetch('/api/trades/save', config)
     .then(() => this.setState({ formSubmitted: true }));
   }
@@ -234,7 +237,7 @@ class Admin extends Component {
     }
     return (
       <div className="container-admin">
-        <Paper className="paper" elevation={8}>
+        <Paper className="paper" elevation={8} key="market-data">
           <form onSubmit={this.onSubmit}>
             <Typography variant="headline" component="p">
               Add Market Data
@@ -272,7 +275,7 @@ class Admin extends Component {
           </form>
         </Paper>
 
-        <Paper className="paper" elevation={8}>
+        <Paper className="paper" elevation={8} key="add-portfolio">
           <form onSubmit={this.onSubmitPortfolio}>
             <Typography variant="headline" component="p">
               Add Portfolio
@@ -308,9 +311,7 @@ class Admin extends Component {
           </form>
         </Paper>
 
-
-
-        <Paper className="paper" elevation={8}>
+        <Paper className="paper" elevation={8} key="add-activity">
           <form onSubmit={this.onSubmitActivity}>
             <Typography variant="headline" component="p">
               Add Activity
@@ -335,7 +336,7 @@ class Admin extends Component {
                 })}
               </Select>
               </FormControl>
-
+            <br />
             <TextField
               className={classes.input}
               id="activity_ticker"
@@ -343,6 +344,16 @@ class Admin extends Component {
               name="activity_ticker"
               margin="dense"
               value={this.state.activity_ticker}
+              onChange={this.onChangeCaps}
+              />
+
+            <TextField
+              className={classes.input}
+              id="base_currency"
+              label="base currency"
+              name="base_currency"
+              margin="dense"
+              value={this.state.base_currency}
               onChange={this.onChangeCaps}
               />
 

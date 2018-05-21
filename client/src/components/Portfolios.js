@@ -34,15 +34,25 @@ class Portfolios extends Component {
       )
     });
     const portfoliosEOD = this.props.portfolios.map((portfolio) => {
-      return (
-        <EOD portfolio={portfolio} key={portfolio.id} />
-      )
+      if (this.props.auth) {
+        return (
+          <EOD portfolio={portfolio} key={portfolio.id} />
+        )
+      } else {
+        return null;
+      }
     });
+
     const portfolios = this.props.portfolios.map((portfolio) => {
-      return (
-        <Portfolio portfolio={portfolio} key={portfolio.id} />
-      )
+      if (this.props.auth) {
+        return (
+          <Portfolio portfolio={portfolio} key={portfolio.id} />
+        )
+      } else {
+        return null
+      }
     });
+
     return (
       <div className="container-benchmark">
         <div className="benchmarks">{benchmarks}{portfoliosEOD}</div>
@@ -53,7 +63,8 @@ class Portfolios extends Component {
 }
 
 const mapStateToProps = state => ({
-  portfolios: state.portfolio.portfolios
+  portfolios: state.portfolio.portfolios,
+  auth: state.auth.isAuthenticated
 });
 
 export default connect(mapStateToProps, { updatePortfolios })(Portfolios);

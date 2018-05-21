@@ -50,6 +50,10 @@ class BalanceSheet extends Component {
   render() {
     const { classes } = this.props;
     const balanceLines = this.state.balances.map((asset) => {
+      let avg_cost = null;
+      if (asset.avg_cost) {
+        avg_cost = asset.avg_cost.toLocaleString('en-US', {minimumFractionDigits: 2})
+      }
       return (
         <TableRow key={asset.ticker} hover={true}>
           <TableCell padding="dense" component="th" scope="row">
@@ -58,7 +62,7 @@ class BalanceSheet extends Component {
 
           <TableCell padding="dense" numeric>{asset.amount}</TableCell>
 
-          <TableCell padding="dense" numeric>{asset.avg_cost}</TableCell>
+          <TableCell padding="dense" numeric>{avg_cost}</TableCell>
 
         </TableRow>
       )

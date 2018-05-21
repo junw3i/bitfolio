@@ -4,44 +4,140 @@ const jwt = require('jsonwebtoken');
 const utils = require('../utils');
 const async = require('async');
 
-/**
-* ===========================================
-* Export model functions as a module
-* ===========================================
-*/
+// recalcuates balance sheet for entire portfolio
 
-const calculateBalance = (portfolio_id, callback) => {
+const calculateFullBalance = (portfolio_id, callback) => {
   db.pool.getConnection((err, connection) => {
     connection.query(`select ticker, sum(quantity) as 'net_quantity' from activities where (type='BUY' or type='SELL') and is_live=1 and portfolio_id=${portfolio_id} group by ticker HAVING net_quantity > 0`, (err2, results) => {
-
       if (err) {
-        console.error("unable to retrive users_watchlist: ", err.message);
+        console.error("unable to retrive balance: ", err.message);
       }
       let balance;
       if (results.length > 0) {
         balance = results;
         connection.query(`update balance set is_live=0, created_at_utc=now() where is_live=1 and portfolio_id=${portfolio_id}`, (err3, results3) => {
           // update balance table
-          results.forEach((ticker) => {
-            // upsert done
-            let queryString = `insert into balance (ticker, amount, is_live, created_at_utc, portfolio_id, portfolio_ticker) values ('${ticker.ticker}', '${ticker.net_quantity}', 1, now(), ${portfolio_id}, '${portfolio_id}_${ticker.ticker}') ON DUPLICATE KEY UPDATE amount='${ticker.net_quantity}', created_at_utc=now(), is_live=1`
+          async.forEachOf(results, (value, index, callback2) => {
+            let queryString = `insert into balance (ticker, amount, is_live, created_at_utc, portfolio_id, portfolio_ticker) values ('${value.ticker}', '${value.net_quantity}', 1, now(), ${portfolio_id}, '${portfolio_id}_${value.ticker}') ON DUPLICATE KEY UPDATE amount='${value.net_quantity}', created_at_utc=now(), is_live=1`;
             connection.query(queryString, (err4, results4) => {
-              console.log("results4", err4);
-
+              console.log("index is done");
+              callback2();
             })
+          }, err => {
+            if (err) console.error(err.message);
+            // configs is now a map of JSON data
+            console.log("ALL DONE");
+            connection.release();
+            callback(balance);
+          });
+        })
+      } else {
+        // probably portfolio activty is empty
+        console.log("NOTHING DONE");
+        connection.release();
+        callback(balance);
+      }
+    })
+  })
+}
+
+// recalcuates balance sheet for specific ticker
+const calculateBalance = (portfolio_id, ticker, callback) => {
+  db.pool.getConnection((err, connection) => {
+    connection.query(`select sum(quantity) as 'net_quantity' from activities where (type='BUY' or type='SELL') and is_live=1 and portfolio_id=${portfolio_id} and ticker='${ticker}' group by ticker HAVING net_quantity > 0`, (err2, results) => {
+      if (err) {
+        console.error("unable to retrive balance: ", err.message);
+      }
+      let balance;
+      if (results.length > 0) {
+        balance = results;
+        connection.query(`update balance set is_live=0, created_at_utc=now() where is_live=1 and portfolio_id=${portfolio_id} and ticker='${ticker}'`, (err3, results3) => {
+          // update balance table
+          let queryString = `insert into balance (ticker, amount, is_live, created_at_utc, portfolio_id, portfolio_ticker) values ('${ticker}', '${results[0].net_quantity}', 1, now(), ${portfolio_id}, '${portfolio_id}_${ticker}') ON DUPLICATE KEY UPDATE amount='${results[0].net_quantity}', created_at_utc=now(), is_live=1`;
+          connection.query(queryString, (err4, results4) => {
+            console.log("balance update done");
+            connection.release();
+            callback(results[0].net_quantity);
           })
         })
+      } else {
+        // probably portfolio activty is empty
+        console.log("NOTHING DONE");
+        connection.release();
+        callback(balance);
       }
-      // connection.release();
-      // TO DO: NEED TO REFACTOR FOR CONNECTION RELEASE
-      callback(balance);
+    })
+  })
+}
+
+const calculateBaseBalance = (portfolio_id, callback) => {
+    db.pool.getConnection((err, connection) => {
+      connection.query(`select base_currency, sum(net_proceeds) as 'proceeds'  from activities where portfolio_id=${portfolio_id} and is_live=1 group by base_currency having proceeds > 0;`, (err2, results) => {
+        if (err) {
+          console.error("unable to retrive users_watchlist: ", err.message);
+        }
+        let balance;
+        if (results.length > 0) {
+          balance = results;
+          // update balance table
+          async.forEachOf(results, (value, index, callback2) => {
+            let queryString = `insert into balance (ticker, amount, is_live, created_at_utc, portfolio_id, portfolio_ticker) values ('${value.base_currency}', '${value.proceeds}', 1, now(), ${portfolio_id}, '${portfolio_id}_${value.base_currency}') ON DUPLICATE KEY UPDATE amount='${value.proceeds}', created_at_utc=now(), is_live=1`;
+            connection.query(queryString, (err4, results4) => {
+              console.log("base_currency is done");
+              callback2();
+            })
+          }, err => {
+            if (err) console.error(err.message);
+            // configs is now a map of JSON data
+            console.log("ALL BASE DONE");
+            connection.release();
+            baseCurrencies = JSON.parse(process.env.BASE_CURRENCY);
+            callback(balance);
+          });
+        }
+      })
+    })
+}
+
+const calculateCost = (portfolio_id, ticker, quantity, callback) => {
+  db.pool.getConnection((err, connection) => {
+    connection.query(`select quantity, net_proceeds from activities where portfolio_id=${portfolio_id} and is_live=1 and ticker='${ticker}' order by activity_date desc;`, (err2, results) => {
+      if (err) {
+        console.error("unable to retrive trades for avg cost calculation: ", err.message);
+      }
+      let balance;
+      let totalCost = 0;
+      let quantityCounter = 0;
+      if (results.length > 0) {
+        balance = results;
+
+        for (i=0; i<balance.length; i++) {
+          if (balance[i].quantity > 0) {
+            if (balance[i].quantity + quantityCounter < quantity) {
+              totalCost += balance[i].net_proceeds;
+              quantityCounter += balance[i].quantity
+            } else {
+              // get pro-rate net proceeds
+              let prorated = (quantity - quantityCounter) / balance[i].quantity;
+              totalCost += prorated * balance[i].net_proceeds;
+              break;
+            }
+          }
+
+        }
+        let avgCost = -(totalCost / quantity).toFixed(4);
+        console.log("avg_cost:", avgCost);
+        connection.query(`update balance set avg_cost='${avgCost}' where portfolio_ticker='${portfolio_id}_${ticker}'`, (err3, results2) => {
+          connection.release();
+          callback(avgCost);
+        })
+      }
     })
   })
 }
 
 module.exports = {
   verify: (payload, callback) => {
-
       // fetch users_watchlist
       db.pool.getConnection((err, connection) => {
         connection.query(`select id, ticker, source, created_at_utc from users_watchlist where user_id=${payload.user_id} and is_live=1`, (err2, res2) => {
@@ -128,7 +224,7 @@ module.exports = {
           console.error("unable to fetch activity table: ", err2.stack);
         }
         connection.release();
-        let userActivities;
+        let userActivities = [];
         if (results !== undefined && results.length > 0) {
           userActivities = results;
         }
@@ -154,17 +250,17 @@ module.exports = {
   saveActivities: (payload, callback) => {
     let string;
     if (payload.price == null && payload.quantity == null) {
-      string = `'${payload.activity_ticker}', '${payload.type}', '${payload.activity_date}', null, null, '${payload.fees}', '${payload.net_proceeds}', now(), '${payload.portfolio_id}'`;
+      string = `'${payload.activity_ticker}', '${payload.type}', '${payload.activity_date}', null, null, '${payload.fees}', '${payload.net_proceeds}', now(), '${payload.portfolio_id}', '${payload.base_currency}'`;
     } else if (payload.price == null) {
-      string = `'${payload.activity_ticker}', '${payload.type}', '${payload.activity_date}', null, '${payload.quantity}', '${payload.fees}', '${payload.net_proceeds}', now(), '${payload.portfolio_id}'`;
+      string = `'${payload.activity_ticker}', '${payload.type}', '${payload.activity_date}', null, '${payload.quantity}', '${payload.fees}', '${payload.net_proceeds}', now(), '${payload.portfolio_id}', '${payload.base_currency}'`;
     } else if (payload.quantity == null) {
-      string = `'${payload.activity_ticker}', '${payload.type}', '${payload.activity_date}', '${payload.price}', null, '${payload.fees}', '${payload.net_proceeds}', now(), '${payload.portfolio_id}'`;
+      string = `'${payload.activity_ticker}', '${payload.type}', '${payload.activity_date}', '${payload.price}', null, '${payload.fees}', '${payload.net_proceeds}', now(), '${payload.portfolio_id}', '${payload.base_currency}'`;
     } else {
-      string = `'${payload.activity_ticker}', '${payload.type}', '${payload.activity_date}', '${payload.price}', '${payload.quantity}', '${payload.fees}', '${payload.net_proceeds}', now(), '${payload.portfolio_id}'`;
+      string = `'${payload.activity_ticker}', '${payload.type}', '${payload.activity_date}', '${payload.price}', '${payload.quantity}', '${payload.fees}', '${payload.net_proceeds}', now(), '${payload.portfolio_id}', '${payload.base_currency}'`;
     }
 
     db.pool.getConnection((err, connection) => {
-      connection.query(`insert into activities (ticker, type, activity_date, price, quantity, fees, net_proceeds, created_at_utc, portfolio_id) VALUES (${string})`, (err2, results) => {
+      connection.query(`insert into activities (ticker, type, activity_date, price, quantity, fees, net_proceeds, created_at_utc, portfolio_id, base_currency) VALUES (${string})`, (err2, results) => {
         if (err2) {
           console.error("unable to insert activity: ", err2.stack);
         }
@@ -175,9 +271,15 @@ module.exports = {
         }
         if (payload.asset_type == 'shares') {
           // do balance
-          calculateBalance(payload.portfolio_id, (results2) => {
+          calculateBalance(payload.portfolio_id, payload.activity_ticker, (results2) => {
             console.log("results2", results2)
-            callback(results2);
+            calculateBaseBalance(payload.portfolio_id, (results3) => {
+              console.log("results2", results3)
+              // calculate cost for ticker
+              calculateCost(payload.portfolio_id, payload.activity_ticker, results2, (results4) => {
+                  callback(results3);
+              })
+            })
           })
         }
       })
@@ -199,3 +301,18 @@ module.exports = {
     })
   }
 }
+// async.forEachOf(obj, (value, key, callback) => {
+//     fs.readFile(__dirname + value, "utf8", (err, data) => {
+//         if (err) return callback(err);
+//         try {
+//             configs[key] = JSON.parse(data);
+//         } catch (e) {
+//             return callback(e);
+//         }
+//         callback();
+//     });
+// }, err => {
+//     if (err) console.error(err.message);
+//     // configs is now a map of JSON data
+//     doSomethingWith(configs);
+// });

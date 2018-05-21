@@ -10,9 +10,6 @@ import { updateTickers } from '../actions/market';
 class MarketData extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-
-    }
     const jwt = localStorage.getItem("jwt");
     if (!!jwt) {
       let config = {
@@ -30,26 +27,39 @@ class MarketData extends Component {
       }
     }
 
+    // static getDerivedStateFromProps(nextProps, prevState) {
+    //   if (prevState.isAuthenticated && !nextProps.auth) {
+    //       // this.props.updateTickers([]);
+    //       this.setState({ isAuthenticated: false });
+    //       console.log("p", nextProps.updateTickers([]));
+    //   }
+    // }
+
     render() {
-      console.log('props', this.props.tickers);
       const ticks = this.props.tickers.map((tick) => {
-        if (tick.source === "binance") {
-          return (
-            <Binance tickData={tick} key={tick.ticker}/>
-          )
-        } else if (tick.source === "coinmarketcap-price") {
-          return (
-            <CmcPrice tickData={tick} key={tick.ticker}/>
-          )
-        } else if (tick.source === "yahoo-price") {
-          return (
-            <Yahoo tickData={tick} key={tick.ticker}/>
-          )
-        } else if (tick.source === "coinmarketcap-volume") {
-          return (
-            <CmcVolume tickData={tick} key={tick.ticker}/>
-          )
+        if (this.props.auth) {
+          // logged in view
+          if (tick.source === "binance") {
+            return (
+              <Binance tickData={tick} key={tick.ticker}/>
+            )
+          } else if (tick.source === "coinmarketcap-price") {
+            return (
+              <CmcPrice tickData={tick} key={tick.ticker}/>
+            )
+          } else if (tick.source === "yahoo-price") {
+            return (
+              <Yahoo tickData={tick} key={tick.ticker}/>
+            )
+          } else if (tick.source === "coinmarketcap-volume") {
+            return (
+              <CmcVolume tickData={tick} key={tick.ticker}/>
+            )
+          } else {
+            return null;
+          }
         } else {
+          // non-logged in view
           return null;
         }
       });
@@ -70,7 +80,8 @@ MarketData.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  tickers: state.market.tickers
+  tickers: state.market.tickers,
+  auth: state.auth.isAuthenticated
 });
 
 export default connect(mapStateToProps, { updateTickers })(MarketData);
