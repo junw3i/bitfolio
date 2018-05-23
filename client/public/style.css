@@ -84,7 +84,6 @@ body {
 
 .container-benchmark {
   display: flex;
-  flex-wrap: wrap;
   padding-left: 10px;
   flex-direction: column;
 }
@@ -148,7 +147,14 @@ body {
   border: 1px solid black;
 }
 
-.paper-balancesheet {
+.paper-balancesheet-crypto {
+  width: 30%;
+  padding: 5px;
+  margin: 10px 5px 10px 5px;
+  border: 1px solid black;
+}
+
+.paper-balancesheet-shares {
   width: 45%;
   padding: 5px;
   margin: 10px 5px 10px 5px;
@@ -197,7 +203,10 @@ h3 {
   .paper-activity {
     width: 88%;
   }
-  .paper-balancesheet {
+  .paper-balancesheet-crypto {
+    width: 88%;
+  }
+  .paper-balancesheet-shares {
     width: 88%;
   }
 }

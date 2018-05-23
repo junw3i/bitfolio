@@ -200,6 +200,7 @@ module.exports = {
             console.error("unable to insert users_tables: ", err.message);
           }
           connection.release();
+          console.log("model return");
           callback({results: "done"});
         })
       })

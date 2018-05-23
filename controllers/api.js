@@ -39,6 +39,7 @@ const benchmark = (req, res) => {
 
 const savePortfolio = (req, res) => {
   api.savePortfolio(req.body, (results) => {
+    console.log("congroller return");
     let payload = JSON.stringify(results);
     res.status(201).send(payload);
   })
@@ -80,7 +81,6 @@ const getBalance = (req, res) => {
 }
 
 const priceFromCMC = (req, res) => {
-  console.log('cmc', req.params.id);
   api.priceFromCMC(req.params.id.toUpperCase(), (results) => {
     let payload = results;
     res.status(201).send({payload});
