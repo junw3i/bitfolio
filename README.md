@@ -1,5 +1,5 @@
 # bitfolio
-A fully featured portfolio management application that supports both traditional equity and digital asset market that is fuelled by React.js and Node.js.
+A fully featured portfolio management application that supports both traditional equity and digital asset market that is fuelled by React.js (v16) and Node.js (v10).
 
 Features include portfolio tracking, performance benchmarking, fund accounting, API integration, user account management & many more. 
 
@@ -11,27 +11,19 @@ Features include portfolio tracking, performance benchmarking, fund accounting, 
 
 ## Libraries used under the hood
 - Front-end
-    - Materialize CSS
-    - JQuery
+    - material UI
+    - moment.js
+    - react.js
+    - redux
 - Back-end
-    - bcrypt
-    - connect-flash
-    - connect-pg-simple
-    - cookie-parser
-    - dotenv
-    - express
-    - express-handlebars
-    - express-messages
-    - express-session
-    - express-validator
-    - method-override
-    - moment
-    - passport
-    - passport-local
-    - pg
-    - request
-    - telebot
-
+     - async
+     - axios
+     - bcrypt
+     - dotenv
+     - express
+     - express-handlebars
+     - jsonwebtoken
+     - mysql
 
 ## Support
 Please [open an issue](https://github.com/junw3i/bitfolio/issues/new) for support.
