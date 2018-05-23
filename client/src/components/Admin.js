@@ -255,6 +255,7 @@ class Admin extends Component {
             <Select
               value={this.state.source}
               onChange={this.onChangeSelect}
+              className={classes.select}
               inputProps={{
                 name: 'source',
                 id: 'source'
@@ -293,6 +294,7 @@ class Admin extends Component {
                 <Select
                   value={this.state.asset_type}
                   onChange={this.onChangeSelectAsset}
+                  className={classes.select}
                   inputProps={{
                     name: 'asset_type',
                     id: 'asset_type'

@@ -35,5 +35,7 @@ router.post("/portfolio/balance", verify, api.getBalance);
 router.post("/trades/get", api.getActivities);
 router.post("/trades/save", verify, api.saveActivities);
 
+router.get("/price/crypto/:id", api.priceFromCMC);
+
 
 module.exports = router;

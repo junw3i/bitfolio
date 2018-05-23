@@ -79,6 +79,14 @@ const getBalance = (req, res) => {
   })
 }
 
+const priceFromCMC = (req, res) => {
+  console.log('cmc', req.params.id);
+  api.priceFromCMC(req.params.id.toUpperCase(), (results) => {
+    let payload = results;
+    res.status(201).send({payload});
+  })
+}
+
 /**
  * ===========================================
  * Export controller functions as a module
@@ -94,5 +102,6 @@ const getBalance = (req, res) => {
    getActivities,
    getEODNav,
    saveActivities,
-   getBalance
+   getBalance,
+   priceFromCMC
  }

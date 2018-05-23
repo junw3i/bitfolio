@@ -3,6 +3,7 @@ const db = require('../db');
 const jwt = require('jsonwebtoken');
 const utils = require('../utils');
 const async = require('async');
+const axios = require('axios');
 
 // recalcuates balance sheet for entire portfolio
 
@@ -176,6 +177,7 @@ module.exports = {
       })
     })
   },
+  // get nav
   benchmark: (payload, callback) => {
     db.pool.getConnection((err, connection) => {
       connection.query(`select price, returns, utc_datetime, ticker from daily where ticker='${payload}' order by utc_datetime desc limit 1`, (err2, results) => {
@@ -265,10 +267,7 @@ module.exports = {
           console.error("unable to insert activity: ", err2.stack);
         }
         connection.release();
-        let eodNAV;
-        if (results !== undefined && results.length > 0) {
-          eodNAV = results[0];
-        }
+
         if (payload.asset_type == 'shares') {
           // do balance
           calculateBalance(payload.portfolio_id, payload.activity_ticker, (results2) => {
@@ -281,6 +280,8 @@ module.exports = {
               })
             })
           })
+        } else if (payload.asset_type == 'cryptocurrencies') {
+          callback({results: "done"})
         }
       })
     })
@@ -294,11 +295,51 @@ module.exports = {
         connection.release();
         let balance = [];
         if (results !== undefined && results.length > 0) {
+          results.map((result) => {
+            result.market_price = null;
+            result.mv = null;
+            result.mv_percent = null;
+          })
           balance = results;
         }
         callback(balance);
       })
     })
+  },
+  priceFromCMC: (payload, callback) => {
+    axios.get('https://api.coinmarketcap.com/v2/listings/')
+      .then((data) => {
+        let tickerId;
+        for (var i=0; i<data.data.data.length; i++) {
+          if (data.data.data[i].symbol === payload) {
+            tickerId = data.data.data[i].id;
+            break;
+          }
+        }
+        if (!isNaN(tickerId)) {
+          // console.log('ticker', tickerId);
+          axios.get('https://api.coinmarketcap.com/v2/ticker/' + String(tickerId) + '/')
+            .then((data2) => {
+              let price = parseFloat(data2.data.data.quotes.USD.price)
+              if (price / 10 > 1) {
+                price = price.toFixed(2);
+              } else {
+                price = price.toFixed(4);
+              }
+              callback(price)
+            })
+            .catch(error => {
+              console.log("error from fetch cmc price", error);
+              callback(null);
+            })
+        } else {
+          callback(null);
+        }
+      })
+      .catch(error => {
+        console.log("error from fetch cmc listings", error);
+        callback(null);
+      });
   }
 }
 // async.forEachOf(obj, (value, key, callback) => {
