@@ -87,6 +87,13 @@ const priceFromCMC = (req, res) => {
   })
 }
 
+const customData = (req, res) => {
+  api.customData(req.body, (results) => {
+    let payload = JSON.stringify(results);
+    res.status(201).send(payload);
+  })
+}
+
 /**
  * ===========================================
  * Export controller functions as a module
@@ -103,5 +110,6 @@ const priceFromCMC = (req, res) => {
    getEODNav,
    saveActivities,
    getBalance,
-   priceFromCMC
+   priceFromCMC,
+   customData
  }

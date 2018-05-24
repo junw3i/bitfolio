@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { updateBalanceSheet } from '../actions/balanceSheet';
+import CustomCrypto from './CustomCrypto';
 
+import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -14,25 +19,21 @@ const styles = theme => ({
     width: '100%',
     marginTop: theme.spacing.unit * 3,
     overflowX: 'auto',
-  },
-  table: {
-
-
-  },
+  }
 });
 
 class BalanceSheetCrypto extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      balances: []
+      balances: [],
+      custom: {}
     };
     setTimeout(() => {
       // crypto
       let temp_balance = this.state.balances
       this.state.balances.forEach((tick, index) => {
         if (tick.market_price === null) {
-          console.log(index, tick);
           fetch('/api/price/crypto/' + tick.ticker)
           .then(response => response.json())
           .then(data => {
@@ -42,14 +43,15 @@ class BalanceSheetCrypto extends Component {
             for (var i=0; i<temp_balance.length; i++) {
               total += temp_balance[i].mv ? parseFloat(temp_balance[i].mv) : 0;
             }
-            console.log(total);
             this.setState({
               balances: temp_balance
             })
+            console.log("updating second fetch!!!!")
+            this.props.updateBalanceSheet(temp_balance, this.props.portfolio_id);
           })
         }
       })
-    }, 4000)
+    }, 3000)
   }
 
   componentDidMount() {
@@ -67,17 +69,58 @@ class BalanceSheetCrypto extends Component {
     .then((data) => {
       this.setState({
         balances: data,
-      })
+      });
+      console.log("updating!!!!")
+      this.props.updateBalanceSheet(data, this.props.portfolio_id);
     })
     .catch(error => console.log("error from fetch", error))
+
+    fetch('/api/custom/data', config)
+    .then((response) => response.json())
+    .then((data) => {
+      this.setState({
+        custom: data,
+      });
+    })
+    .catch(error => console.log("error from fetch custom", error))
   }
 
+
   render() {
-    console.log('rendering');
     const { classes } = this.props;
+    let asset_price, asset_amount, base_amount, lower_bound_price, upper_bound_price;
     let temp = this.state.balances
     const balanceLines = temp.map((asset) => {
-      console.log(asset);
+
+      if (asset.ticker === 'BNB') {
+        asset_price = asset.market_price;
+        asset_amount = asset.amount;
+
+
+      } else if (asset.ticker === 'USDT' || asset.ticker === 'USD') {
+        base_amount = asset.amount;
+      }
+      if (base_amount && asset_price && asset_amount) {
+        let starting_price = this.state.custom.starting_price;
+        let step = this.state.custom.step;
+        let spread = this.state.custom.spread;
+        let qty = this.state.custom.qty;
+        lower_bound_price = asset_price;
+        upper_bound_price = asset_price;
+        // calculate bankrupt condition
+        while (base_amount > 0) {
+          let multiplyer = Math.max(Math.ceil((starting_price - lower_bound_price) / step), 1)
+          lower_bound_price = (lower_bound_price * (1-spread)).toFixed(2)
+          base_amount = base_amount - (lower_bound_price * qty * multiplyer)
+        }
+        // calculate exit condition
+        while (asset_amount > 0) {
+          let multiplyer = Math.max(Math.ceil((starting_price - upper_bound_price) / step), 1);
+          upper_bound_price = (upper_bound_price * (1+parseFloat(spread))).toFixed(2)
+          asset_amount = asset_amount - (qty * multiplyer)
+        }
+      }
+
       let amount = null;
       let mv = null;
       if (asset.amount) {
@@ -85,7 +128,6 @@ class BalanceSheetCrypto extends Component {
       }
       if (asset.mv) {
         mv = parseFloat(asset.mv).toLocaleString('en-US', {minimumFractionDigits: 0})
-
       }
       return (
         <TableRow key={asset.ticker} hover={true}>
@@ -101,26 +143,67 @@ class BalanceSheetCrypto extends Component {
       )
     });
     return (
-      <div>
-        Balance Sheet
+      <div className="bs-custom">
+        <Paper className="paper-balancesheet-crypto" elevation={8}>
+          Balance Sheet
+          <Table className={classes.table}>
+            <TableHead>
+              <TableRow>
+                <TableCell padding="dense">Ticker</TableCell>
+                <TableCell padding="dense"
+                  numeric>Quantity</TableCell>
+                <TableCell padding="dense" numeric>Market Price</TableCell>
+                <TableCell padding="dense" numeric>MV</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {balanceLines}
+            </TableBody>
+          </Table>
+        </Paper>
 
-        <Table className={classes.table}>
-        <TableHead>
-          <TableRow>
-            <TableCell padding="dense">Ticker</TableCell>
-            <TableCell padding="dense"
-              numeric>Quantity</TableCell>
-            <TableCell padding="dense" numeric>Market Price</TableCell>
-            <TableCell padding="dense" numeric>MV</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {balanceLines}
-        </TableBody>
-      </Table>
+        <Paper className="paper-custom" elevation={8}>
+          Metrics
+          <Table className={classes.table}>
+
+            <TableBody>
+              <TableRow key="profits" hover={true}>
+                <TableCell padding="dense" component="th" scope="row">
+                  PnL
+                </TableCell>
+
+                <TableCell padding="dense" numeric>{this.state.custom.profits}</TableCell>
+              </TableRow>
+
+              <TableRow key="lower" hover={true}>
+                <TableCell padding="dense" component="th" scope="row">
+                  Lower Bound
+                </TableCell>
+                <TableCell padding="dense" numeric>{lower_bound_price}</TableCell>
+              </TableRow>
+
+              <TableRow key="upper" hover={true}>
+                <TableCell padding="dense" component="th" scope="row">
+                  Upper Bound
+                </TableCell>
+                <TableCell padding="dense" numeric>{upper_bound_price}</TableCell>
+              </TableRow>
+
+            </TableBody>
+          </Table>
+        </Paper>
       </div>
     );
   }
 }
 
-export default withStyles(styles)(BalanceSheetCrypto);
+BalanceSheetCrypto.propTypes = {
+  updateBalanceSheet: PropTypes.func.isRequired,
+};
+
+
+const mapStateToProps = state => ({
+  portfolios: state.portfolio.portfolios
+});
+
+export default connect(mapStateToProps, { updateBalanceSheet })(withStyles(styles)(BalanceSheetCrypto));

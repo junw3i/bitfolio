@@ -12,3 +12,5 @@ export const LOGOUT = 'LOGOUT';
 export const UPDATE_TICKERS = "UPDATE_TICKERS";
 
 export const UPDATE_PORTFOLIOS = "UPDATE_PORTFOLIOS";
+
+export const UPDATE_BALANACE = "UPDATE_BALANACE";

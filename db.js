@@ -10,7 +10,13 @@
 
 //  remove import models
 const url = require('url');
+var redis = require("redis"),
+    r = redis.createClient();
+const {promisify} = require('util');
+
+
 require('dotenv').config()
+
 // //check to see if we have this heroku environment variable
 // if( process.env.DATABASE_URL ){
 
@@ -38,6 +44,13 @@ require('dotenv').config()
 //   };
 // }
 
+r.on("error", function (err) {
+    console.log("Redis Error " + err);
+});
+
+
+const getAsync = promisify(r.get).bind(r);
+
 var mysql      = require('mysql');
 var connection = mysql.createPool({
   connectionLimit : 10,
@@ -54,5 +67,7 @@ var connection = mysql.createPool({
 // });
 
 module.exports = {
-  pool: connection
+  pool: connection,
+  r,
+  getAsync
 }

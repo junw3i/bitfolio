@@ -146,11 +146,14 @@ body {
   margin: 10px 10px 10px 0;
   border: 1px solid black;
 }
-
+.bs-custom {
+  width: 50%;
+  display: flex;
+}
 .paper-balancesheet-crypto {
-  width: 30%;
+  width: 60%;
   padding: 5px;
-  margin: 10px 5px 10px 5px;
+  margin: 10px 10px 10px 0;
   border: 1px solid black;
 }
 
@@ -158,6 +161,13 @@ body {
   width: 45%;
   padding: 5px;
   margin: 10px 5px 10px 5px;
+  border: 1px solid black;
+}
+
+.paper-custom {
+  width: 40%;
+  padding: 5px;
+  margin: 10px 10px 10px 0;
   border: 1px solid black;
 }
 

@@ -27,14 +27,6 @@ class MarketData extends Component {
       }
     }
 
-    // static getDerivedStateFromProps(nextProps, prevState) {
-    //   if (prevState.isAuthenticated && !nextProps.auth) {
-    //       // this.props.updateTickers([]);
-    //       this.setState({ isAuthenticated: false });
-    //       console.log("p", nextProps.updateTickers([]));
-    //   }
-    // }
-
     render() {
       const ticks = this.props.tickers.map((tick) => {
         if (this.props.auth) {

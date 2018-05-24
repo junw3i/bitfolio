@@ -341,6 +341,22 @@ module.exports = {
         console.log("error from fetch cmc listings", error);
         callback(null);
       });
+  },
+  customData: (payload, callback) => {
+    var promise1 = db.getAsync(payload.portfolio_id + "_profits");
+    var promise2 = db.getAsync(payload.portfolio_id + "_step");
+    var promise3 = db.getAsync(payload.portfolio_id + "_starting_price");
+    var promise4 = db.getAsync(payload.portfolio_id + "_spread");
+    var promise5 = db.getAsync(payload.portfolio_id + "_qty");
+    Promise.all([promise1, promise2, promise3, promise4, promise5]).then(function(values) {
+      callback({
+        profits: values[0],
+        step: values[1],
+        starting_price: values[2],
+        spread: values[3],
+        qty: values[4]
+      });
+    });
   }
 }
 // async.forEachOf(obj, (value, key, callback) => {
