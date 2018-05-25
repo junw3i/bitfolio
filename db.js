@@ -15,34 +15,7 @@ var redis = require("redis"),
 const {promisify} = require('util');
 
 
-require('dotenv').config()
-
-// //check to see if we have this heroku environment variable
-// if( process.env.DATABASE_URL ){
-
-//   //we need to take apart the url so we can set the appropriate configs
-
-//   const params = url.parse(process.env.DATABASE_URL);
-//   const auth = params.auth.split(':');
-
-//   //make the configs object
-//   var configs = {
-//     user: auth[0],
-//     password: auth[1],
-//     host: params.hostname,
-//     port: params.port,
-//     database: params.pathname.split('/')[1],
-//     ssl: true
-//   };
-
-// } else {
-//   var configs = {
-//     user: 'cj',
-//     host: '127.0.0.1',
-//     database: 'reminders',
-//     port: 5432
-//   };
-// }
+// require('dotenv').config()
 
 r.on("error", function (err) {
     console.log("Redis Error " + err);
@@ -59,6 +32,8 @@ var connection = mysql.createPool({
   password : process.env.SQL_PASSWORD_SG,
   database : process.env.SQL_DB_SG
 });
+
+console.log("HASHDAHSDAHS", process.env.SQL_HOSTNAME_SG);
 
 // sample query
 // connection.query("select * from daily limit 1;", function (error, results, fields) {
