@@ -41,7 +41,7 @@ function loginError(message) {
         // We dispatch requestLogin to kickoff the call to the API
         dispatch(requestLogin(creds));
 
-        return fetch('http://localhost:3001/users/login', config)
+        return fetch('/users/login', config)
             .then(response => response.json().then(user => ({ user, response })))
             .then(({ user, response }) =>  {
                 if (!response.ok) {

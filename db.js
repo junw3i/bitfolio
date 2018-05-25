@@ -15,12 +15,11 @@ var redis = require("redis"),
 const {promisify} = require('util');
 
 
-// require('dotenv').config()
+require('dotenv').config()
 
 r.on("error", function (err) {
     console.log("Redis Error " + err);
 });
-
 
 const getAsync = promisify(r.get).bind(r);
 
@@ -32,14 +31,6 @@ var connection = mysql.createPool({
   password : process.env.SQL_PASSWORD_SG,
   database : process.env.SQL_DB_SG
 });
-
-console.log("HASHDAHSDAHS", process.env.SQL_HOSTNAME_SG);
-
-// sample query
-// connection.query("select * from daily limit 1;", function (error, results, fields) {
-//   if (error) throw error;
-//   console.log('The solution is: ', results[0].year);
-// });
 
 module.exports = {
   pool: connection,

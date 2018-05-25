@@ -36,9 +36,9 @@ app.use('/price', priceRouter);
 app.use('/api', apiRouter);
 app.use('/volume', volRouter);
 
-app.get('*', function(req, res){
-  res.status(404).send('404');
-});
+// app.get('*', function(req, res){
+//   res.status(404).send('404');
+// });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
