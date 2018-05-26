@@ -30,7 +30,6 @@ class BalanceSheetShares extends Component {
       let temp_balance = this.state.balances
       this.state.balances.forEach((tick, index) => {
         if (tick.market_price === null) {
-          console.log(index, tick);
           fetch('/api/price/crypto/' + tick.ticker)
           .then(response => response.json())
           .then(data => {
@@ -71,7 +70,6 @@ class BalanceSheetShares extends Component {
   }
 
   render() {
-    console.log('rendering');
     const { classes } = this.props;
     let temp = this.state.balances
     const balanceLines = temp.map((asset) => {

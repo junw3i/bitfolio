@@ -11,7 +11,6 @@ const verify = (req, res, next) => {
       if (decoded.id === 'undefined') {
         res.sendStatus(403);
       } else {
-
         req.body.user_id = decoded.id;
         next();
       }

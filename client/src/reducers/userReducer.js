@@ -14,7 +14,6 @@ export default function(state = initialState, action) {
 
       }
       case CREATE_SUCCESS:
-        console.log("user_reducer", action.payload);
         return {
           ...state,
           auth: action.payload,

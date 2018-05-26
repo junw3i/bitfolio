@@ -4,6 +4,10 @@ import { Redirect } from 'react-router';
 import { connect } from 'react-redux';
 import { loginUser } from '../actions/login';
 
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -37,19 +41,34 @@ class Login extends Component {
 
     return (
       <div>
-      Login
+        <Typography variant="headline" component="p">
+          Login
+        </Typography>
       <form onSubmit={this.onSubmit}>
-        <div>
-          <label>Email: </label><br />
-          <input type="text" name="email" onChange={this.onChange} value={this.state.email} />
-        </div>
+        <TextField
+          id="email"
+          label="email"
+          name="email"
+          margin="normal"
+          type="email"
+          value={this.state.email}
+          onChange={this.onChange}
+        />
         <br />
-        <div>
-          <label>Password: </label><br />
-          <input type="password" name="password" onChange={this.onChange} value={this.state.password} />
-        </div>
+        <TextField
+          id="password"
+          label="password"
+          name="password"
+          margin="normal"
+          type="password"
+          value={this.state.password}
+          onChange={this.onChange}
+        />
         <br />
-        <button type="submit">Submit</button>
+        <Button className="admin-button" type="submit">
+          Submit
+        </Button>
+
       </form>
       </div>
     );

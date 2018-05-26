@@ -28,38 +28,44 @@ class Portfolios extends Component {
     };
   }
   render() {
+    if (this.props.auth) {
+      const benchmarks = this.state.benchmarkList.map((tick) => {
+        return (
+          <Benchmark tick={tick} key={tick} />
+        )
+      });
+      const portfoliosEOD = this.props.portfolios.map((portfolio) => {
+        if (this.props.auth) {
+          return (
+            <EOD portfolio={portfolio} key={portfolio.id} />
+          )
+        } else {
+          return null;
+        }
+      });
 
-    const benchmarks = this.state.benchmarkList.map((tick) => {
+      const portfolios = this.props.portfolios.map((portfolio) => {
+        if (this.props.auth) {
+          return (
+            <Portfolio portfolio={portfolio} key={portfolio.id} />
+          )
+        } else {
+          return null
+        }
+      });
+
       return (
-        <Benchmark tick={tick} key={tick} />
-      )
-    });
-    const portfoliosEOD = this.props.portfolios.map((portfolio) => {
-      if (this.props.auth) {
-        return (
-          <EOD portfolio={portfolio} key={portfolio.id} />
-        )
-      } else {
-        return null;
-      }
-    });
+        <div className="container-benchmark">
+          <div className="benchmarks">{benchmarks}{portfoliosEOD}</div>
+          {portfolios}
+        </div>
+      );
+    } else {
+      // return public view
+      return null;
+    }
 
-    const portfolios = this.props.portfolios.map((portfolio) => {
-      if (this.props.auth) {
-        return (
-          <Portfolio portfolio={portfolio} key={portfolio.id} />
-        )
-      } else {
-        return null
-      }
-    });
 
-    return (
-      <div className="container-benchmark">
-        <div className="benchmarks">{benchmarks}{portfoliosEOD}</div>
-        {portfolios}
-      </div>
-    );
   }
 }
 

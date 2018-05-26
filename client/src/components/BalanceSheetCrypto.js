@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { updateBalanceSheet } from '../actions/balanceSheet';
-import CustomCrypto from './CustomCrypto';
 
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
@@ -44,7 +43,6 @@ class BalanceSheetCrypto extends Component {
             this.setState({
               balances: temp_balance
             })
-            console.log("updating second fetch!!!!")
             this.props.updateBalanceSheet(temp_balance, this.props.portfolio_id);
           })
         }
@@ -68,7 +66,6 @@ class BalanceSheetCrypto extends Component {
       this.setState({
         balances: data,
       });
-      console.log("updating!!!!")
       this.props.updateBalanceSheet(data, this.props.portfolio_id);
     })
     .catch(error => console.log("error from fetch", error))

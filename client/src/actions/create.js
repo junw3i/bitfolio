@@ -35,7 +35,6 @@ export function createUser(creds) {
     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
     body: `email=${creds.email}&password=${creds.password}`
   };
-  console.log(config);
   return dispatch => {
     // We dispatch requestLogin to kickoff the call to the API
     dispatch(requestCreate(creds));
@@ -43,7 +42,6 @@ export function createUser(creds) {
     return fetch('/users/create', config)
     .then(response => response.json().then(user => ({ user, response })))
     .then(({ user, response }) =>  {
-      console.log(user, response);
         if (!response.ok) {
         // If there was a problem, we want to
         // dispatch the error condition

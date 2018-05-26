@@ -2,7 +2,6 @@ import React from 'react';
 import RecentTrades from './RecentTrades';
 import BalanceSheetCrypto from './BalanceSheetCrypto';
 import BalanceSheetShares from './BalanceSheetShares';
-import CustomCrypto from './CustomCrypto';
 
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';

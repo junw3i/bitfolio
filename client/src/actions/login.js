@@ -36,7 +36,6 @@ function loginError(message) {
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: `email=${creds.email}&password=${creds.password}`
     };
-    console.log(config);
     return dispatch => {
         // We dispatch requestLogin to kickoff the call to the API
         dispatch(requestLogin(creds));

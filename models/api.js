@@ -146,6 +146,7 @@ module.exports = {
           if (err) {
             console.error("unable to retrive users_watchlist: ", err.message);
           }
+          console.log(res2)
           let userTickers = [];
           if (res2.length > 0) {
             userTickers = res2;
