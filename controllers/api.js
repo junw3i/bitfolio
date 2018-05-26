@@ -94,6 +94,13 @@ const customData = (req, res) => {
   })
 }
 
+const initial = (req, res) => {
+  api.initial(req.body, (results) => {
+    let payload = JSON.stringify(results);
+    res.status(201).send(payload);
+  })
+}
+
 /**
  * ===========================================
  * Export controller functions as a module
@@ -111,5 +118,6 @@ const customData = (req, res) => {
    saveActivities,
    getBalance,
    priceFromCMC,
-   customData
+   customData,
+   initial
  }

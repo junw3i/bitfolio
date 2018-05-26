@@ -358,20 +358,29 @@ module.exports = {
         qty: values[4]
       });
     });
+  },
+  initial: (payload, callback) => {
+    db.pool.getConnection((err, connection) => {
+      connection.query(`select nav from nav_table where is_live=1 and portfolio_id=${payload.portfolio_id} order by datetime_utc limit 1`, (err2, results) => {
+        if (err2) {
+          console.error("unable to fetch eod nav: ", err2.stack);
+        }
+        let original_nav = 0;
+        if (results !== undefined && results.length > 0) {
+          original_nav = results[0].nav
+        }
+        connection.query(`select sum(adjustments) as "total_adjustments" from nav_table where is_live=1 and portfolio_id=${payload.portfolio_id}`, (err3, results2) => {
+          let total_adjustments = 0;
+          if (results2 !== undefined && results.length > 0) {
+            total_adjustments = results2[0].total_adjustments
+          }
+          let payload = {
+            original_nav,
+            total_adjustments
+          }
+          callback(payload);
+        })
+      })
+    })
   }
 }
-// async.forEachOf(obj, (value, key, callback) => {
-//     fs.readFile(__dirname + value, "utf8", (err, data) => {
-//         if (err) return callback(err);
-//         try {
-//             configs[key] = JSON.parse(data);
-//         } catch (e) {
-//             return callback(e);
-//         }
-//         callback();
-//     });
-// }, err => {
-//     if (err) console.error(err.message);
-//     // configs is now a map of JSON data
-//     doSomethingWith(configs);
-// });
