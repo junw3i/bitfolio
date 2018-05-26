@@ -24,7 +24,8 @@ class BalanceSheetCrypto extends Component {
     super(props);
     this.state = {
       balances: [],
-      custom: {}
+      custom: {},
+      total: null
     };
     setTimeout(() => {
       // crypto
@@ -41,7 +42,8 @@ class BalanceSheetCrypto extends Component {
               total += temp_balance[i].mv ? parseFloat(temp_balance[i].mv) : 0;
             }
             this.setState({
-              balances: temp_balance
+              balances: temp_balance,
+              total
             })
             this.props.updateBalanceSheet(temp_balance, this.props.portfolio_id);
           })
@@ -83,7 +85,7 @@ class BalanceSheetCrypto extends Component {
 
   render() {
     const { classes } = this.props;
-    let asset_price, asset_amount, base_amount, lower_bound_price, upper_bound_price;
+    let asset_price, asset_amount, base_amount, lower_bound_price, upper_bound_price, profits, total;
     let temp = this.state.balances
     const balanceLines = temp.map((asset) => {
 
@@ -118,11 +120,18 @@ class BalanceSheetCrypto extends Component {
 
       let amount = null;
       let mv = null;
+
       if (asset.amount) {
         amount = asset.amount.toLocaleString('en-US', {minimumFractionDigits: 2})
       }
       if (asset.mv) {
         mv = parseFloat(asset.mv).toLocaleString('en-US', {minimumFractionDigits: 0})
+      }
+      if (this.state.custom.profits) {
+        profits = this.state.custom.profits.toLocaleString('en-US', {minimumFractionDigits: 2})
+      }
+      if (this.state.total) {
+        total = this.state.total.toLocaleString('en-US', {minimumFractionDigits: 2})
       }
       return (
         <TableRow key={asset.ticker} hover={true}>
@@ -167,7 +176,7 @@ class BalanceSheetCrypto extends Component {
                   PnL
                 </TableCell>
 
-                <TableCell padding="dense" numeric>{this.state.custom.profits}</TableCell>
+                <TableCell padding="dense" numeric>{profits}</TableCell>
               </TableRow>
 
               <TableRow key="lower" hover={true}>
@@ -182,6 +191,13 @@ class BalanceSheetCrypto extends Component {
                   Upper Bound
                 </TableCell>
                 <TableCell padding="dense" numeric>{upper_bound_price}</TableCell>
+              </TableRow>
+
+              <TableRow key="upper" hover={true}>
+                <TableCell padding="dense" component="th" scope="row">
+                  NAV
+                </TableCell>
+                <TableCell padding="dense" numeric>{total}</TableCell>
               </TableRow>
 
             </TableBody>
