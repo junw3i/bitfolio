@@ -25,6 +25,10 @@ class BalanceSheetCrypto extends Component {
     this.state = {
       balances: [],
       custom: {},
+      initial: {
+        original_nav: 0,
+        total_adjustments: 0
+      },
       total: null
     };
     setTimeout(() => {
@@ -80,12 +84,22 @@ class BalanceSheetCrypto extends Component {
       });
     })
     .catch(error => console.log("error from fetch custom", error))
+
+    fetch('/api/custom/initial', config)
+    .then((response) => response.json())
+    .then((data) => {
+      this.setState({
+        initial: data,
+      });
+    })
+    .catch(error => console.log("error from fetch custom initial", error))
+
   }
 
 
   render() {
     const { classes } = this.props;
-    let asset_price, asset_amount, base_amount, lower_bound_price, upper_bound_price, profits, total;
+    let asset_price, asset_amount, base_amount, lower_bound_price, upper_bound_price, profits, total, initial_gain;
     let temp = this.state.balances
     const balanceLines = temp.map((asset) => {
 
@@ -132,7 +146,12 @@ class BalanceSheetCrypto extends Component {
       }
       if (this.state.total) {
         total = this.state.total.toLocaleString('en-US', {minimumFractionDigits: 2})
+        console.log("asd", this.state.initial)
+        if (this.state.initial.original_nav > 0) {
+          initial_gain = ((((this.state.total + this.state.initial.total_adjustments)/ this.state.initial.original_nav) - 1) * 100).toFixed(2)
+        }
       }
+
       return (
         <TableRow key={asset.ticker} hover={true}>
           <TableCell padding="dense" component="th" scope="row">
@@ -198,6 +217,13 @@ class BalanceSheetCrypto extends Component {
                   NAV
                 </TableCell>
                 <TableCell padding="dense" numeric>{total}</TableCell>
+              </TableRow>
+
+              <TableRow key="upper" hover={true}>
+                <TableCell padding="dense" component="th" scope="row">
+                  Gain Since Inception
+                </TableCell>
+                <TableCell padding="dense" className={initial_gain>0 ? "green" : "red"} numeric>{initial_gain}%</TableCell>
               </TableRow>
 
             </TableBody>

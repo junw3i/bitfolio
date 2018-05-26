@@ -112,11 +112,11 @@ body {
 }
 
 .card-benchmark .returns-red {
-  color: rgba(255, 23, 68, 0.8);
+  color: #FF8A80 !important;
 }
 
 .red {
-  color: rgba(255, 23, 68, 0.8) !important;
+  color: #FF8A80 !important;
 }
 
 .card-benchmark .returns-black {
