@@ -146,7 +146,6 @@ class BalanceSheetCrypto extends Component {
       }
       if (this.state.total) {
         total = this.state.total.toLocaleString('en-US', {minimumFractionDigits: 2})
-        console.log("asd", this.state.initial)
         if (this.state.initial.original_nav > 0) {
           initial_gain = ((((this.state.total + this.state.initial.total_adjustments)/ this.state.initial.original_nav) - 1) * 100).toFixed(2)
         }
@@ -195,7 +194,7 @@ class BalanceSheetCrypto extends Component {
                   PnL
                 </TableCell>
 
-                <TableCell padding="dense" numeric>{profits}</TableCell>
+                <TableCell padding="dense" numeric>{profits.toFixed(2)}</TableCell>
               </TableRow>
 
               <TableRow key="lower" hover={true}>

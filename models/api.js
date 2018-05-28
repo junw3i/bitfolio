@@ -311,6 +311,9 @@ module.exports = {
   priceFromCMC: (payload, callback) => {
     axios.get('https://api.coinmarketcap.com/v2/listings/')
       .then((data) => {
+        if (payload == 'usd') {
+          payload = 'USDT';
+        }
         let tickerId;
         for (var i=0; i<data.data.data.length; i++) {
           if (data.data.data[i].symbol === payload) {
