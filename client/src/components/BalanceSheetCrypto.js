@@ -100,13 +100,14 @@ class BalanceSheetCrypto extends Component {
   render() {
     const { classes } = this.props;
     let asset_price, asset_amount, base_amount, lower_bound_price, upper_bound_price, profits, total, initial_gain;
-    let temp = this.state.balances
+
+    let temp = this.state.balances;
+
     const balanceLines = temp.map((asset) => {
 
       if (asset.ticker === 'BNB') {
         asset_price = asset.market_price;
         asset_amount = asset.amount;
-
 
       } else if (asset.ticker === 'USDT' || asset.ticker === 'USD') {
         base_amount = asset.amount;
@@ -131,6 +132,14 @@ class BalanceSheetCrypto extends Component {
           asset_amount = asset_amount - (qty * multiplyer)
         }
       }
+
+      if (this.props.portfolio_id === 11) {
+        lower_bound_price = this.state.custom.lower_bound_price;
+        upper_bound_price = this.state.custom.upper_bound_price;
+        profits = this.state.custom.pnl;
+      }
+
+
 
       let amount = null;
       let mv = null;

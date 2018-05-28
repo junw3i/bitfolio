@@ -344,20 +344,44 @@ module.exports = {
       });
   },
   customData: (payload, callback) => {
-    var promise1 = db.getAsync(payload.portfolio_id + "_profits");
-    var promise2 = db.getAsync(payload.portfolio_id + "_step");
-    var promise3 = db.getAsync(payload.portfolio_id + "_starting_price");
-    var promise4 = db.getAsync(payload.portfolio_id + "_spread");
-    var promise5 = db.getAsync(payload.portfolio_id + "_qty");
-    Promise.all([promise1, promise2, promise3, promise4, promise5]).then(function(values) {
-      callback({
-        profits: values[0],
-        step: values[1],
-        starting_price: values[2],
-        spread: values[3],
-        qty: values[4]
+    if (payload.portfolio_id === 11) {
+      var promise1 = db.getAsync(payload.portfolio_id + "_profits");
+      var promise2 = db.getAsync(payload.portfolio_id + "_step");
+      var promise3 = db.getAsync(payload.portfolio_id + "_starting_price");
+      var promise4 = db.getAsync(payload.portfolio_id + "_spread");
+      var promise5 = db.getAsync(payload.portfolio_id + "_qty");
+      var promise6 = db.getAsync(payload.portfolio_id + "_lower_bound_price");
+      var promise7 = db.getAsync(payload.portfolio_id + "_upper_bound_price");
+      var promise8 = db.getAsync(payload.portfolio_id + "_pnl");
+      Promise.all([promise1, promise2, promise3, promise4, promise5, promise6, promise7, promise8]).then(function(values) {
+        callback({
+          profits: values[0],
+          step: values[1],
+          starting_price: values[2],
+          spread: values[3],
+          qty: values[4],
+          lower_bound_price: values[5],
+          upper_bound_price: values[6],
+          pnl: values[7]
+        });
       });
-    });
+
+    } else {
+      var promise1 = db.getAsync(payload.portfolio_id + "_profits");
+      var promise2 = db.getAsync(payload.portfolio_id + "_step");
+      var promise3 = db.getAsync(payload.portfolio_id + "_starting_price");
+      var promise4 = db.getAsync(payload.portfolio_id + "_spread");
+      var promise5 = db.getAsync(payload.portfolio_id + "_qty");
+      Promise.all([promise1, promise2, promise3, promise4, promise5]).then(function(values) {
+        callback({
+          profits: values[0],
+          step: values[1],
+          starting_price: values[2],
+          spread: values[3],
+          qty: values[4]
+        });
+      });
+    }
   },
   initial: (payload, callback) => {
     db.pool.getConnection((err, connection) => {
