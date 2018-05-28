@@ -142,7 +142,7 @@ class BalanceSheetCrypto extends Component {
         mv = parseFloat(asset.mv).toLocaleString('en-US', {minimumFractionDigits: 0})
       }
       if (this.state.custom.profits) {
-        profits = this.state.custom.profits.toLocaleString('en-US', {minimumFractionDigits: 2})
+        profits = this.state.custom.profits.toLocaleString('en-US', {maximumFractionDigits: 2})
       }
       if (this.state.total) {
         total = this.state.total.toLocaleString('en-US', {minimumFractionDigits: 2})
@@ -194,7 +194,7 @@ class BalanceSheetCrypto extends Component {
                   PnL
                 </TableCell>
 
-                <TableCell padding="dense" numeric>{profits.toFixed(2)}</TableCell>
+                <TableCell padding="dense" numeric>{profits}</TableCell>
               </TableRow>
 
               <TableRow key="lower" hover={true}>
