@@ -136,10 +136,7 @@ class BalanceSheetCrypto extends Component {
       if (this.props.portfolio_id === 11) {
         lower_bound_price = this.state.custom.lower_bound_price;
         upper_bound_price = this.state.custom.upper_bound_price;
-        profits = this.state.custom.pnl;
       }
-
-
 
       let amount = null;
       let mv = null;
