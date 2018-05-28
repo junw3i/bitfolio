@@ -81,10 +81,14 @@ const getBalance = (req, res) => {
 }
 
 const priceFromCMC = (req, res) => {
-  api.priceFromCMC(req.params.id.toUpperCase(), (results) => {
-    let payload = results;
-    res.status(201).send({payload});
-  })
+  if (req.params.id.toUpperCase() === 'USD') {
+    res.status(201).send({payload: 1});
+  } else {
+    api.priceFromCMC(req.params.id.toUpperCase(), (results) => {
+      let payload = results;
+      res.status(201).send({payload});
+    })
+  }
 }
 
 const customData = (req, res) => {
