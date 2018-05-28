@@ -63,7 +63,7 @@ class RecentTrades extends Component {
               {trade.ticker}
             </TableCell>
             <TableCell padding="dense"
-              className={classes.date} numeric>{moment(trade.activity_date).add((moment().utcOffset()), 'm').format("DD-MMM HH:mm")}</TableCell>
+              className={classes.date} numeric>{moment(trade.activity_date).format("DD-MMM HH:mm")}</TableCell>
             <TableCell className="green" padding="dense" numeric>{trade.type}</TableCell>
             <TableCell padding="dense" numeric>{trade.quantity}</TableCell>
             <TableCell padding="dense" numeric>{trade.price}</TableCell>
@@ -77,7 +77,7 @@ class RecentTrades extends Component {
               {trade.ticker}
             </TableCell>
             <TableCell padding="dense"
-              className={classes.date} numeric>{moment(trade.activity_date).add((moment().utcOffset()), 'm').format("DD-MMM HH:mm")}</TableCell>
+              className={classes.date} numeric>{moment(trade.activity_date).format("DD-MMM HH:mm")}</TableCell>
             <TableCell className="red" padding="dense" numeric>{trade.type}</TableCell>
             <TableCell padding="dense" numeric>{trade.quantity}</TableCell>
             <TableCell padding="dense" numeric>{trade.price}</TableCell>
@@ -90,7 +90,7 @@ class RecentTrades extends Component {
             <TableCell padding="dense" component="th" scope="row">
               {trade.ticker}
             </TableCell>
-            <TableCell padding="dense" className={classes.date} numeric>{moment(trade.activity_date).add((moment().utcOffset()), 'm').format("DD-MMM HH:mm")}</TableCell>
+            <TableCell padding="dense" className={classes.date} numeric>{moment(trade.activity_date).format("DD-MMM HH:mm")}</TableCell>
             <TableCell padding="dense" numeric>{trade.type}</TableCell>
             <TableCell padding="dense" numeric>{trade.quantity}</TableCell>
             <TableCell padding="dense" numeric>{trade.price}</TableCell>
