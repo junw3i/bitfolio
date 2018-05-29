@@ -62,7 +62,20 @@ class Portfolios extends Component {
       );
     } else {
       // return public view
-      return null;
+      return (
+        <div className="public-container">
+          <div>
+            <h3>A custom built portfolio management application that allows users to track the performance of their stock and crypto holdings in real time.</h3>
+            <div>
+              <p class="red">DEMO ACCOUNT</p>
+              <p class="white">email: <i>demo@account.com</i></p>
+              <p class="white">password: <i>demo</i></p>
+            </div>
+          </div>
+
+
+        </div>
+      );
     }
 
 
