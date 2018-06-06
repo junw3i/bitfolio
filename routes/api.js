@@ -43,6 +43,6 @@ router.get("/test", (req, res) => {
   res.status(201).send("ok");
 });
 
-router.get("/testdb", api.test);
+router.get("/testdb", api.testdb);
 
 module.exports = router;
