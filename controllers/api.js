@@ -105,6 +105,13 @@ const initial = (req, res) => {
   })
 }
 
+const testdb = (req, res) => {
+  api.testdb((results) => {
+    let payload = JSON.stringify(results);
+    res.status(201).send(payload);
+  })
+}
+
 /**
  * ===========================================
  * Export controller functions as a module
@@ -123,5 +130,6 @@ const initial = (req, res) => {
    getBalance,
    priceFromCMC,
    customData,
-   initial
+   initial,
+   testdb
  }

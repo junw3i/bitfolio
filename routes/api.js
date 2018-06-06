@@ -39,4 +39,9 @@ router.get("/price/crypto/:id", api.priceFromCMC);
 router.post("/custom/data", verify, api.customData);
 router.post("/custom/initial", verify, api.initial);
 
+router.get("/test", (req, res) => {
+  res.status(201).send("ok");
+});
+router.get("/testdb", api.test);
+
 module.exports = router;

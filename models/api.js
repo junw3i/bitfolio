@@ -406,5 +406,17 @@ module.exports = {
         })
       })
     })
+  },
+  testdb: (callback) => {
+    db.pool.getConnection((err, connection) => {
+      if (err) {
+        console.error("get db connection failed: ", err);
+      }
+      connection.ping(function (err) {
+        if (err) throw err;
+        console.log('Server responded to ping');
+        callback({results: 'ok'});
+      })
+    }
   }
 }
