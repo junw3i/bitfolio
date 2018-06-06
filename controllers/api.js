@@ -106,7 +106,7 @@ const initial = (req, res) => {
 }
 
 const testdb = (req, res) => {
-  api.testdb((results) => {
+  api.testdb("ping", (results) => {
     let payload = JSON.stringify(results);
     res.status(201).send(payload);
   })
