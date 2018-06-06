@@ -417,6 +417,6 @@ module.exports = {
         console.log('Server responded to ping');
         callback({results: 'ok'});
       })
-    }
+    })
   }
 }
