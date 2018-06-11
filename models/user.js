@@ -23,35 +23,29 @@ const jwt = require('jsonwebtoken');
 module.exports = {
   login: (email, password, callback) => {
     // get pw hash
-    db.pool.getConnection(function(err, connection) {
-
-
-      connection.query(`select id, email, password from users where email='${email}'`, (err, res) => {
-        if (err) {
-          console.error("unable to retrive user's pw: ", err.stack);
-        }
-        let pwHash;
-        console.log("query", res.length);
-        if (res.length > 0) {
-          pwHash = res[0].password;
-        }
-        bcrypt.compare(password, pwHash, (err2, res2) => {
-          if (res2) {
-            let payload = {
-              id: res[0].id,
-              email: res[0].email
-            }
-            let token = jwt.sign(payload, process.env.TOKEN_KEY);
-            connection.release();
-            callback(err2, { token: token });
-          } else {
-            connection.release();
-            callback(err2, {invalidCredentials: true});
+    db.pool.query(`select id, email, password from users where email='${email}'`, (err, res) => {
+      if (err) {
+        console.error("unable to retrive user's pw: ", err.stack);
+      }
+      let pwHash;
+      if (res.length > 0) {
+        pwHash = res[0].password;
+      }
+      bcrypt.compare(password, pwHash, (err2, res2) => {
+        if (res2) {
+          let payload = {
+            id: res[0].id,
+            email: res[0].email
           }
-        })
+          let token = jwt.sign(payload, process.env.TOKEN_KEY);
+          connection.release();
+          callback(err2, { token: token });
+        } else {
+          connection.release();
+          callback(err2, {invalidCredentials: true});
+        }
       })
     })
-
   },
     create: (user, callback) => {
 
