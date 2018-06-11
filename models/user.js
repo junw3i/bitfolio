@@ -38,10 +38,8 @@ module.exports = {
             email: res[0].email
           }
           let token = jwt.sign(payload, process.env.TOKEN_KEY);
-          connection.release();
           callback(err2, { token: token });
         } else {
-          connection.release();
           callback(err2, {invalidCredentials: true});
         }
       })
