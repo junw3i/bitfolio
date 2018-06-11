@@ -45,29 +45,25 @@ module.exports = {
       })
     })
   },
-    create: (user, callback) => {
-
-      bcrypt.hash(user.password, 1, (err, hash) => {
-        if (err) console.error('hash error', err);
-        db.pool.getConnection(function(err, connection) {
-          connection.query(`insert into users (email, password, created_at_utc) values ('${user.email}', '${hash}', now())`, (err, res) => {
-            if (err) {
-              console.error("unable to create user in db", err.stack);
-              connection.release();
-              callback(err, { token: '' });
-            } else {
-              connection.query(`SELECT LAST_INSERT_ID()`, (err2, res2) => {
-                let payload = {
-                  id: res2[0]["LAST_INSERT_ID()"],
-                  email: user.email
-                }
-                let token = jwt.sign(payload, process.env.TOKEN_KEY);
-                connection.release();
-                callback(err, { token: token });
-              })
-            }
-          })
+  create: (user, callback) => {
+    bcrypt.hash(user.password, 1, (err, hash) => {
+      if (err) console.error('hash error', err);
+        db.pool.query(`insert into users (email, password, created_at_utc) values ('${user.email}', '${hash}', now())`, (err, res) => {
+          if (err) {
+            console.error("unable to create user in db", err.stack);
+            callback(err, { token: '' });
+          } else {
+            db.pool.query(`SELECT LAST_INSERT_ID()`, (err2, res2) => {
+              let payload = {
+                id: res2[0]["LAST_INSERT_ID()"],
+                email: user.email
+              }
+              let token = jwt.sign(payload, process.env.TOKEN_KEY);
+              callback(err, { token: token });
+            })
+          }
         })
-      });
-    }
+      })
+    });
+  }
 }
