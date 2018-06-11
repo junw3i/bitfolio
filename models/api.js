@@ -9,8 +9,8 @@ const axios = require('axios');
 
 const calculateFullBalance = (portfolio_id, callback) => {
   db.pool.query(`select ticker, sum(quantity) as 'net_quantity' from activities where (type='BUY' or type='SELL') and is_live=1 and portfolio_id=${portfolio_id} group by ticker HAVING net_quantity > 0`, (err2, results) => {
-    if (err) {
-      console.error("unable to retrive balance: ", err.message);
+    if (err2) {
+      console.error("unable to retrive balance: ", err2);
     }
     let balance;
     if (results.length > 0) {
@@ -41,8 +41,8 @@ const calculateFullBalance = (portfolio_id, callback) => {
 // recalcuates balance sheet for specific ticker
 const calculateBalance = (portfolio_id, ticker, callback) => {
   db.pool.query(`select sum(quantity) as 'net_quantity' from activities where (type='BUY' or type='SELL') and is_live=1 and portfolio_id=${portfolio_id} and ticker='${ticker}' group by ticker HAVING net_quantity > 0`, (err2, results) => {
-    if (err) {
-      console.error("unable to retrive balance: ", err.message);
+    if (err2) {
+      console.error("unable to retrive balance: ", err2);
     }
     let balance;
     if (results.length > 0) {
@@ -65,8 +65,8 @@ const calculateBalance = (portfolio_id, ticker, callback) => {
 
 const calculateBaseBalance = (portfolio_id, callback) => {
   db.pool.query(`select base_currency, sum(net_proceeds) as 'proceeds'  from activities where portfolio_id=${portfolio_id} and is_live=1 group by base_currency having proceeds > 0;`, (err2, results) => {
-    if (err) {
-      console.error("unable to retrive users_watchlist: ", err.message);
+    if (err2) {
+      console.error("unable to retrive users_watchlist: ", err2);
     }
     let balance;
     if (results.length > 0) {
@@ -91,8 +91,8 @@ const calculateBaseBalance = (portfolio_id, callback) => {
 
 const calculateCost = (portfolio_id, ticker, quantity, callback) => {
   db.pool.query(`select quantity, net_proceeds from activities where portfolio_id=${portfolio_id} and is_live=1 and ticker='${ticker}' order by activity_date desc;`, (err2, results) => {
-    if (err) {
-      console.error("unable to retrive trades for avg cost calculation: ", err.message);
+    if (err2) {
+      console.error("unable to retrive trades for avg cost calculation: ", err2);
     }
     let balance;
     let totalCost = 0;
@@ -127,8 +127,8 @@ module.exports = {
   verify: (payload, callback) => {
     // fetch users_watchlist
     db.pool.query(`select id, ticker, source, created_at_utc from users_watchlist where user_id=${payload.user_id} and is_live=1`, (err2, res2) => {
-      if (err) {
-        console.error("unable to retrive users_watchlist: ", err.message);
+      if (err2) {
+        console.error("unable to retrive users_watchlist: ", err2);
       }
       console.log(res2)
       let userTickers = [];
@@ -142,7 +142,7 @@ module.exports = {
   saveTicker: (payload, callback) => {
     db.pool.query(`insert into users_watchlist (ticker, source, created_at_utc, user_id) VALUES ('${payload.ticker}', '${payload.source}', now(), ${payload.user_id})`, (err2, results) => {
       if (err2) {
-        console.error("unable to insert users_watchlist: ", err.message);
+        console.error("unable to insert users_watchlist: ", err2);
       }
       callback({results: "done"});
     })
@@ -355,7 +355,7 @@ module.exports = {
 
     db.pool.query(`select nav from nav_table where is_live=1 and portfolio_id=${payload.portfolio_id} order by datetime_utc limit 1`, (err2, results) => {
       if (err2) {
-        console.error("unable to fetch eod nav: ", err2.stack);
+        console.error("unable to fetch eod nav: ", err2);
       }
       let original_nav = 0;
       if (results !== undefined && results.length > 0) {
