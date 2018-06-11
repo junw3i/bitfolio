@@ -15,10 +15,7 @@ const Portfolio = ({portfolio}) => {
           <Paper className="paper-activity" elevation={8}>
             <RecentTrades key={portfolio.id} portfolio_id={portfolio.id}/>
           </Paper>
-
-            <BalanceSheetCrypto key={portfolio.id} portfolio_id={portfolio.id} asset_type={portfolio.asset_type} />
-
-
+          <BalanceSheetCrypto key={portfolio.id} portfolio_id={portfolio.id} asset_type={portfolio.asset_type} />
         </div>
       </div>
     )

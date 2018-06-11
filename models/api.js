@@ -357,6 +357,7 @@ module.exports = {
       if (err2) {
         console.error("unable to fetch eod nav: ", err2);
       }
+      console.log("results", payload.portfolio_id, results);
       let original_nav = 0;
       if (results !== undefined && results.length > 0) {
         original_nav = results[0].nav
@@ -370,6 +371,7 @@ module.exports = {
           original_nav,
           total_adjustments
         }
+        console.log(payload.portfolio_id, payload);
         callback(payload);
       })
     })

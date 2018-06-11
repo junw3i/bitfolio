@@ -139,7 +139,9 @@ body {
 
 .portfolio-container {
   display: flex;
+  flex-wrap: wrap;
 }
+
 .paper-activity {
   width: 45%;
   padding: 5px;
@@ -235,12 +237,18 @@ h3 {
   }
 
   .paper-activity {
-    width: 88%;
+    width: auto;
   }
+
+  .bs-custom {
+    width: auto;
+    display: flex;
+  }
+
   .paper-balancesheet-crypto {
-    width: 88%;
+    width: auto;
   }
   .paper-balancesheet-shares {
-    width: 88%;
+    width: auto;
   }
 }
