@@ -112,6 +112,13 @@ const testdb = (req, res) => {
   })
 }
 
+const getProfits = (req, res) => {
+  api.getProfits(req.params.id, (results) => {
+    let payload = results
+    res.status(201).send(payload);
+  })
+}
+
 /**
  * ===========================================
  * Export controller functions as a module
@@ -131,5 +138,6 @@ const testdb = (req, res) => {
    priceFromCMC,
    customData,
    initial,
+   getProfits,
    testdb
  }

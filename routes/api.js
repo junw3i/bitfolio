@@ -41,8 +41,10 @@ router.post("/custom/initial", verify, api.initial);
 
 router.get("/test", (req, res) => {
   res.status(201).send("ok");
-});
+})
 
-router.get("/testdb", api.testdb);
+router.get("/testdb", api.testdb)
+
+router.get("/profits/:id", api.getProfits);
 
 module.exports = router;

@@ -3,7 +3,7 @@ const db = require('../db');
 const jwt = require('jsonwebtoken');
 const utils = require('../utils');
 const async = require('async');
-const axios = require('axios');
+const axios = require('axios')
 
 // recalcuates balance sheet for entire portfolio
 
@@ -100,7 +100,7 @@ const calculateCost = (portfolio_id, ticker, quantity, callback) => {
     if (results.length > 0) {
       balance = results;
 
-      for (i=0; i<balance.length; i++) {
+      for (i = 0; i < balance.length; i++) {
         if (balance[i].quantity > 0) {
           if (balance[i].quantity + quantityCounter < quantity) {
             totalCost += balance[i].net_proceeds;
@@ -135,7 +135,7 @@ module.exports = {
       if (res2.length > 0) {
         userTickers = res2;
       }
-      callback(err2, userTickers );
+      callback(err2, userTickers);
     })
 
   },
@@ -144,7 +144,7 @@ module.exports = {
       if (err2) {
         console.error("unable to insert users_watchlist: ", err2);
       }
-      callback({results: "done"});
+      callback({ results: "done" });
     })
 
   },
@@ -153,7 +153,7 @@ module.exports = {
       if (err2) {
         console.error("unable to kill ticker in users_watchlist: ", err.message);
       }
-      callback({results: "done"});
+      callback({ results: "done" });
     })
   },
   // get nav
@@ -177,7 +177,7 @@ module.exports = {
       }
 
       console.log("model return");
-      callback({results: "done"});
+      callback({ results: "done" });
     })
 
   },
@@ -197,7 +197,7 @@ module.exports = {
   },
   getActivities: (payload, callback) => {
 
-    db.pool.query(`select id, activity_date, ticker, type, quantity, price, net_proceeds from activities where is_live=1 and portfolio_id=${payload.portfolio_id} order by activity_date desc limit 10`, (err2, results) => {
+    db.pool.query(`select id, activity_date, ticker, type, quantity, price, net_proceeds from activities where is_live=1 and portfolio_id=${payload.portfolio_id} order by activity_date desc limit 15`, (err2, results) => {
       if (err2) {
         console.error("unable to fetch activity table: ", err2.stack);
       }
@@ -254,7 +254,7 @@ module.exports = {
           })
         })
       } else if (payload.asset_type == 'cryptocurrencies') {
-        callback({results: "done"})
+        callback({ results: "done" })
       }
     })
 
@@ -278,38 +278,38 @@ module.exports = {
   },
   priceFromCMC: (payload, callback) => {
     axios.get('https://api.coinmarketcap.com/v2/listings/')
-    .then((data) => {
-      let tickerId;
-      for (var i=0; i<data.data.data.length; i++) {
-        if (data.data.data[i].symbol === payload) {
-          tickerId = data.data.data[i].id;
-          break;
-        }
-      }
-      if (!isNaN(tickerId)) {
-        // console.log('ticker', tickerId);
-        axios.get('https://api.coinmarketcap.com/v2/ticker/' + String(tickerId) + '/')
-        .then((data2) => {
-          let price = parseFloat(data2.data.data.quotes.USD.price)
-          if (price / 10 > 1) {
-            price = price.toFixed(2);
-          } else {
-            price = price.toFixed(4);
+      .then((data) => {
+        let tickerId;
+        for (var i = 0; i < data.data.data.length; i++) {
+          if (data.data.data[i].symbol === payload) {
+            tickerId = data.data.data[i].id;
+            break;
           }
-          callback(price)
-        })
-        .catch(error => {
-          console.log("error from fetch cmc price", error);
+        }
+        if (!isNaN(tickerId)) {
+          // console.log('ticker', tickerId);
+          axios.get('https://api.coinmarketcap.com/v2/ticker/' + String(tickerId) + '/')
+            .then((data2) => {
+              let price = parseFloat(data2.data.data.quotes.USD.price)
+              if (price / 10 > 1) {
+                price = price.toFixed(2);
+              } else {
+                price = price.toFixed(4);
+              }
+              callback(price)
+            })
+            .catch(error => {
+              console.log("error from fetch cmc price", error);
+              callback(null);
+            })
+        } else {
           callback(null);
-        })
-      } else {
+        }
+      })
+      .catch(error => {
+        console.log("error from fetch cmc listings", error);
         callback(null);
-      }
-    })
-    .catch(error => {
-      console.log("error from fetch cmc listings", error);
-      callback(null);
-    });
+      });
   },
   customData: (payload, callback) => {
     if (payload.portfolio_id === 11) {
@@ -321,7 +321,7 @@ module.exports = {
       var promise6 = db.getAsync(payload.portfolio_id + "_lower_bound_price");
       var promise7 = db.getAsync(payload.portfolio_id + "_upper_bound_price");
       var promise8 = db.getAsync(payload.portfolio_id + "_pnl");
-      Promise.all([promise1, promise2, promise3, promise4, promise5, promise6, promise7, promise8]).then(function(values) {
+      Promise.all([promise1, promise2, promise3, promise4, promise5, promise6, promise7, promise8]).then(function (values) {
         callback({
           profits: values[0],
           step: values[1],
@@ -340,7 +340,7 @@ module.exports = {
       var promise3 = db.getAsync(payload.portfolio_id + "_starting_price");
       var promise4 = db.getAsync(payload.portfolio_id + "_spread");
       var promise5 = db.getAsync(payload.portfolio_id + "_qty");
-      Promise.all([promise1, promise2, promise3, promise4, promise5]).then(function(values) {
+      Promise.all([promise1, promise2, promise3, promise4, promise5]).then(function (values) {
         callback({
           profits: values[0],
           step: values[1],
@@ -381,7 +381,13 @@ module.exports = {
     db.pool.ping(function (err2) {
       if (err2) throw err2;
       console.log('Server responded to ping');
-      callback({results: 'ok'});
+      callback({ results: 'ok' });
+    })
+  },
+  getProfits: (id, callback) => {
+    // get profits from redis
+    db.r.get(id, (err, res) => {
+      callback(profits)
     })
   }
 }
