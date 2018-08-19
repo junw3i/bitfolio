@@ -386,8 +386,8 @@ module.exports = {
   },
   getProfits: (id, callback) => {
     // get profits from redis
-    db.r.get(id, (err, res) => {
-      callback(profits)
+    db.r.get(`${id}_profits`, (err, res) => {
+      callback(res)
     })
   }
 }
