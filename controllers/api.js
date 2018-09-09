@@ -119,6 +119,13 @@ const getProfits = (req, res) => {
   })
 }
 
+const bitmex = (req, res) => {
+  api.bitmex((results) => {
+    let payload = results
+    res.status(201).send(payload)
+  })
+}
+
 /**
  * ===========================================
  * Export controller functions as a module
@@ -139,5 +146,6 @@ const getProfits = (req, res) => {
    customData,
    initial,
    getProfits,
-   testdb
+   testdb,
+   bitmex,
  }

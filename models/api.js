@@ -389,5 +389,11 @@ module.exports = {
     db.r.get(`${id}_profits`, (err, res) => {
       callback(res)
     })
-  }
+  },
+  bitmex: (callback) => {
+    // get profits from redis
+    db.r.get(`bitmex_quantity`, (err, res) => {
+      callback(res)
+    })
+  },
 }

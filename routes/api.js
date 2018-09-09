@@ -45,6 +45,8 @@ router.get("/test", (req, res) => {
 
 router.get("/testdb", api.testdb)
 
-router.get("/profits/:id", api.getProfits);
+router.get("/profits/:id", api.getProfits)
+
+router.get("/bitmex", verify, api.bitmex)
 
 module.exports = router;

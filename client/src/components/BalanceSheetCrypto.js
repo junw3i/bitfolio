@@ -29,7 +29,10 @@ class BalanceSheetCrypto extends Component {
         original_nav: 0,
         total_adjustments: 0
       },
-      total: null
+      total: null,
+      bitmexQuantity: 0,
+      bitmexFunding: 0,
+      bitmexMarginUsed: 0,
     };
     setTimeout(() => {
       // crypto
