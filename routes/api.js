@@ -47,6 +47,6 @@ router.get("/testdb", api.testdb)
 
 router.get("/profits/:id", api.getProfits)
 
-router.get("/bitmex", verify, api.bitmex)
+router.get("/bitmex", api.bitmex)
 
 module.exports = router;

@@ -33,6 +33,7 @@ class BalanceSheetCrypto extends Component {
       bitmexQuantity: 0,
       bitmexFunding: 0,
       bitmexMarginUsed: 0,
+      bitmexHeartbeat: 0,
     };
     setTimeout(() => {
       // crypto
@@ -93,9 +94,20 @@ class BalanceSheetCrypto extends Component {
     .then((data) => {
       this.setState({
         initial: data,
-      });
+      })
     })
     .catch(error => console.log("error from fetch custom initial", error))
+
+    fetch('/api/bitmex')
+    .then(response => response.json())
+    .then((data) => {
+      this.setState({
+        bitmexQuantity: data.quantity,
+        bitmexFunding: data.funding,
+        bitmexMarginUsed: data.margin,
+        bitmexHeartbeat: data.heartbeat,
+      })
+    })
 
   }
 
@@ -103,6 +115,9 @@ class BalanceSheetCrypto extends Component {
   render() {
     const { classes } = this.props;
     let asset_price, asset_amount, base_amount, lower_bound_price, upper_bound_price, profits, total, initial_gain;
+    const heartBeat = this.state.bitmexHeartbeat
+    const now = Date.now() / 1000 | 0
+    const timeDiff = parseInt((now - heartBeat) / 60)
 
     let temp = this.state.balances;
 
@@ -220,18 +235,46 @@ class BalanceSheetCrypto extends Component {
                 <TableCell padding="dense" numeric>{upper_bound_price}</TableCell>
               </TableRow>
 
-              <TableRow key="upper" hover={true}>
+              <TableRow key="nav" hover={true}>
                 <TableCell padding="dense" component="th" scope="row">
                   NAV
                 </TableCell>
                 <TableCell padding="dense" numeric>{total}</TableCell>
               </TableRow>
 
-              <TableRow key="upper" hover={true}>
+              <TableRow key="gain" hover={true}>
                 <TableCell padding="dense" component="th" scope="row">
                   Gain Since Inception
                 </TableCell>
                 <TableCell padding="dense" className={initial_gain>0 ? "green" : "red"} numeric>{initial_gain}%</TableCell>
+              </TableRow>
+
+              <TableRow key="position" hover={true}>
+                <TableCell padding="dense" component="th" scope="row">
+                  BitMEX Position
+                </TableCell>
+                <TableCell padding="dense" numeric>{this.state.bitmexQuantity}</TableCell>
+              </TableRow>
+
+              <TableRow key="funding" hover={true}>
+                <TableCell padding="dense" component="th" scope="row">
+                  BitMEX Funding
+                </TableCell>
+                <TableCell padding="dense" numeric>{this.state.bitmexFunding * 100}%</TableCell>
+              </TableRow>
+
+              <TableRow key="margin" hover={true}>
+                <TableCell padding="dense" component="th" scope="row">
+                  BitMEX Margin
+                </TableCell>
+                <TableCell padding="dense" numeric>{this.state.bitmexMarginUsed}</TableCell>
+              </TableRow>
+
+              <TableRow key="heartbeat" hover={true}>
+                <TableCell padding="dense" component="th" scope="row">
+                  BitMEX Heartbeat
+                </TableCell>
+                <TableCell padding="dense" numeric>{timeDiff}m ago</TableCell>
               </TableRow>
 
             </TableBody>

@@ -120,6 +120,7 @@ const getProfits = (req, res) => {
 }
 
 const bitmex = (req, res) => {
+  console.log('here')
   api.bitmex((results) => {
     let payload = results
     res.status(201).send(payload)
