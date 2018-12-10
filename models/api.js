@@ -124,6 +124,14 @@ const calculateCost = (portfolio_id, ticker, quantity, callback) => {
 }
 
 module.exports = {
+  binanceBook: (payload, callback) => {
+    console.log(payload, 'https://api.binance.com/api/v1/depth?symbol=' + payload + '&limit=20')
+    axios.get('https://api.binance.com/api/v1/depth?symbol=' + payload + '&limit=20')
+      .then((data) => {
+        callback(data.data)
+    })
+    .catch((e) => console.log(e))
+  },
   verify: (payload, callback) => {
     // fetch users_watchlist
     db.pool.query(`select id, ticker, source, created_at_utc from users_watchlist where user_id=${payload.user_id} and is_live=1`, (err2, res2) => {

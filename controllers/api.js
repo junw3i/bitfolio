@@ -127,6 +127,14 @@ const bitmex = (req, res) => {
   })
 }
 
+const binanceBook = (req, res) => {
+  const pair = req.params.pair;
+  api.binanceBook(pair, (results) => {
+    let payload = results
+    res.status(201).send(payload)
+  })
+}
+
 /**
  * ===========================================
  * Export controller functions as a module
@@ -149,4 +157,5 @@ const bitmex = (req, res) => {
    getProfits,
    testdb,
    bitmex,
+   binanceBook,
  }
